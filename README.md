@@ -2,6 +2,8 @@
 
 A modern, responsive temple website showcasing our sacred heritage and community services.
 
+**Live Website:** [https://samba425.github.io/TempleWeb/](https://samba425.github.io/TempleWeb/)
+
 ## About This Website
 
 This website serves as the digital home for devotees and visitors, providing:
