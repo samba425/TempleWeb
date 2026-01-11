@@ -1,0 +1,151 @@
+{
+  "hero": {
+    "title": "UTTHARANDHRA SABARIMALA",
+    "teluguText": "ఉత్తరాంధ్ర శబరిమల (అయ్యప్ప స్వామి ఆలయం)",
+    "subtitle": "Swamiye Saranam Ayyappa",
+    "location": "Pendurthi, Visakhapatnam, Andhra Pradesh",
+    "carouselImages": [
+      "assets/images/480614142_1340522376959783_2104656479553551940_n.jpg",
+      "assets/images/486472084_1196186785851212_8874622736568729395_n.jpg",
+      "assets/images/474645972_1102912134661594_7088183194580120380_n.jpg"
+    ]
+  },
+  "about": {
+    "title": "Lord Ayyappa - Dharma Sastha",
+    "sections": [
+      {
+        "heading": "About Lord Ayyappa",
+        "content": "Lord Ayyappa, also known as Dharma Sastha, is a Hindu deity who is the son of Harihara (Vishnu and Shiva). He is particularly worshipped in Kerala and is the presiding deity of the famous Sabarimala temple. Ayyappa is depicted as a celibate yogi, and devotees observe strict penance before visiting the temple."
+      },
+      {
+        "heading": "Sabarimala Pilgrimage",
+        "content": "The Sabarimala pilgrimage is one of the largest annual pilgrimages in the world. Devotees undertake a 41-day vratham (penance) wearing black/blue clothes, practicing celibacy, and following a vegetarian diet. The pilgrimage season culminates during the Makaravilakku festival."
+      },
+      {
+        "heading": "Vratham and Devotion",
+        "content": "During the 41-day vratham, devotees wake up early, take bath twice daily, visit temples regularly, abstain from intoxicants, practice celibacy, and chant 'Swamiye Saranam Ayyappa'. This spiritual discipline purifies the mind and body."
+      },
+      {
+        "heading": "Makaravilakku",
+        "content": "Makaravilakku is the divine light that appears on the hills of Sabarimala on Makara Sankranti (January 14/15). Millions of devotees witness this celestial phenomenon, which is considered highly auspicious and marks the culmination of the pilgrimage season."
+      }
+    ]
+  },
+  "services": [
+    {
+      "name": "Daily Pooja",
+      "description": "Regular daily worship services",
+      "price": "Free",
+      "icon": "self_improvement"
+    },
+    {
+      "name": "Abhishekam",
+      "description": "Special ritual bathing of the deity with milk, honey, and sacred water",
+      "price": "₹500",
+      "icon": "water_drop"
+    },
+    {
+      "name": "Archana",
+      "description": "Offering of flowers and chanting of 108 names of Lord Ayyappa",
+      "price": "₹100",
+      "icon": "local_florist"
+    },
+    {
+      "name": "Annadanam",
+      "description": "Free meal distribution to devotees (can be sponsored)",
+      "price": "Sponsored",
+      "icon": "restaurant"
+    },
+    {
+      "name": "Seva",
+      "description": "Various special service offerings to the deity",
+      "price": "₹1000+",
+      "icon": "volunteer_activism"
+    },
+    {
+      "name": "Homam",
+      "description": "Sacred fire ritual for specific blessings",
+      "price": "₹2000+",
+      "icon": "local_fire_department"
+    }
+  ],
+  "gallery": [
+    {
+      "url": "assets/images/480614142_1340522376959783_2104656479553551940_n.jpg",
+      "title": "Temple Main View",
+      "description": "Front view of the temple"
+    },
+    {
+      "url": "assets/images/486472084_1196186785851212_8874622736568729395_n.jpg",
+      "title": "Temple Deity",
+      "description": "Lord Ayyappa idol"
+    },
+    {
+      "url": "assets/images/474645972_1102912134661594_7088183194580120380_n.jpg",
+      "title": "Temple Premises",
+      "description": "Temple compound area"
+    },
+    {
+      "url": "assets/images/480973372_1170906191712605_3515341891943046139_n (1).jpg",
+      "title": "Festival Celebration",
+      "description": "Special festival event"
+    },
+    {
+      "url": "assets/images/43178806_2226317190966115_7484369083266236416_n.jpg",
+      "title": "Temple Evening View",
+      "description": "Temple illuminated at night"
+    }
+  ],
+  "contact": {
+    "templeName": "UTTHARANDHRA SABARIMALA",
+    "address": "Pendurthi, Visakhapatnam, Andhra Pradesh",
+    "phone": "+91 1234567890",
+    "email": "info@uttharandhrasabarimala.org",
+    "timings": {
+      "morning": "5:00 AM - 12:00 PM",
+      "evening": "4:00 PM - 9:00 PM"
+    }
+  },
+  "events": [
+    {
+      "name": "Mandala Pooja",
+      "date": "November - December",
+      "description": "41-day vratham period culminating in Mandala Pooja",
+      "icon": "event"
+    },
+    {
+      "name": "Makaravilakku",
+      "date": "January 14/15",
+      "description": "The celestial light appears on Makara Sankranti",
+      "icon": "wb_sunny"
+    },
+    {
+      "name": "Monthly Abhishekam",
+      "date": "First Saturday of every month",
+      "description": "Special abhishekam with panchamritham",
+      "icon": "calendar_month"
+    }
+  ],
+  "features": [
+    {
+      "icon": "self_improvement",
+      "title": "Daily Pooja",
+      "description": "Traditional worship services performed twice daily"
+    },
+    {
+      "icon": "event_available",
+      "title": "Special Events",
+      "description": "Celebrate major festivals and auspicious occasions"
+    },
+    {
+      "icon": "volunteer_activism",
+      "title": "Online Donations",
+      "description": "Secure donation facility with instant receipts"
+    },
+    {
+      "icon": "photo_library",
+      "title": "Photo Gallery",
+      "description": "View temple events and festival celebrations"
+    }
+  ]
+}
