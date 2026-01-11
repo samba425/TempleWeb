@@ -9,11 +9,26 @@
 
   <section class="section-padding">
     <div class="container">
-      <!-- Local Images Gallery -->
+      <!-- Category Filter -->
+      <div class="category-filter">
+        <button 
+          mat-button 
+          *ngFor="let category of categories"
+          [class.active]="selectedCategory === category"
+          (click)="filterByCategory(category)">
+          {{ category | titlecase }}
+        </button>
+      </div>
+
+      <!-- Gallery Grid with Pagination -->
       <div class="gallery-grid">
-        <div class="gallery-card" *ngFor="let image of localImages; let i = index" (click)="openPreview(image, i)">
+        <div class="gallery-card" *ngFor="let image of displayedImages; let i = index" 
+             (click)="openPreview(image.url || image.imageUrl, i)">
           <div class="card-image">
-            <img [src]="image" alt="Temple Gallery Image {{i + 1}}" loading="lazy">
+            <img 
+              [src]="image.thumbnailUrl || image.url || image.imageUrl" 
+              [alt]="image.title || 'Temple Image'" 
+              loading="lazy">
             <div class="card-overlay">
               <mat-icon>zoom_in</mat-icon>
               <p>View Image</p>
@@ -21,26 +36,29 @@
           </div>
           <div class="card-footer">
             <mat-icon>photo_camera</mat-icon>
-            <span>Temple Moment {{i + 1}}</span>
+            <span>{{ image.title || 'Temple Moment ' + (i + 1) }}</span>
           </div>
         </div>
       </div>
 
-      <!-- Firebase Images (if available) -->
-      <div class="gallery-grid firebase-gallery" *ngIf="images.length > 0" style="margin-top: 2rem;">
-        <div class="gallery-card" *ngFor="let image of images; let i = index">
-          <div class="card-image">
-            <img [src]="image.imageUrl" [alt]="image.title" loading="lazy">
-            <div class="card-overlay">
-              <mat-icon>zoom_in</mat-icon>
-              <p>View Image</p>
-            </div>
-          </div>
-          <div class="card-footer">
-            <mat-icon>photo_camera</mat-icon>
-            <span>{{ image.title }}</span>
-          </div>
-        </div>
+      <!-- Load More Button -->
+      <div class="load-more" *ngIf="hasMore && !isLoading">
+        <button mat-raised-button color="primary" (click)="loadMoreImages()">
+          <mat-icon>expand_more</mat-icon>
+          Load More Images
+        </button>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div class="loading" *ngIf="isLoading">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading images...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="displayedImages.length === 0 && !isLoading">
+        <mat-icon>photo_library</mat-icon>
+        <p>No images found in this category</p>
       </div>
     </div>
   </section>

@@ -43,10 +43,23 @@ export class ManageContentComponent implements OnInit {
   async ngOnInit() {
     this.contentItems = await this.firebaseService.getContent();
     this.contentItems.forEach(item => {
-      if (item.id) {
+      if (item.id && item.data) {
+        // Handle different data structures based on section
+        let formData: any = {};
+        
+        if (typeof item.data === 'object' && item.data.title) {
+          formData.title = item.data.title;
+        }
+        
+        if (typeof item.data === 'object' && item.data.content) {
+          formData.content = item.data.content;
+        } else {
+          formData.content = JSON.stringify(item.data, null, 2);
+        }
+        
         this.forms.set(item.id, this.fb.group({
-          title: [item.title, Validators.required],
-          content: [item.content, Validators.required]
+          title: [formData.title || item.section, Validators.required],
+          content: [formData.content || '', Validators.required]
         }));
       }
     });

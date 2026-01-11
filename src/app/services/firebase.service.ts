@@ -21,13 +21,72 @@ import {
 } from '@angular/fire/storage';
 import { Observable, from } from 'rxjs';
 
+// Unified Schema for Both JSON and Firebase
+export interface HeroContent {
+  title: string;
+  teluguText: string;
+  subtitle: string;
+  location: string;
+  carouselImages: string[];
+}
+
+export interface AboutSection {
+  heading: string;
+  content: string;
+}
+
+export interface AboutContent {
+  title: string;
+  sections: AboutSection[];
+}
+
+export interface ServiceItem {
+  name: string;
+  description: string;
+  price: string;
+  icon: string;
+}
+
+export interface EventItem {
+  name: string;
+  date: string;
+  description: string;
+  icon: string;
+}
+
+export interface FeatureItem {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+export interface ContactInfo {
+  templeName: string;
+  address: string;
+  phone: string;
+  email: string;
+  timings: {
+    morning: string;
+    evening: string;
+  };
+}
+
+// Complete Temple Content Structure
+export interface TempleContentData {
+  hero?: HeroContent;
+  about?: AboutContent;
+  services?: ServiceItem[];
+  events?: EventItem[];
+  features?: FeatureItem[];
+  contact?: ContactInfo;
+}
+
+// For Firestore document metadata
 export interface TempleContent {
   id?: string;
-  section: string;
-  title: string;
-  content: string;
-  imageUrl?: string;
-  updatedAt: Date;
+  section: string;  // "hero", "about", "services", etc.
+  data: any;        // The actual content (matches JSON structure)
+  updatedAt?: Date;
 }
 
 export interface GalleryImage {
@@ -64,14 +123,61 @@ export class FirebaseService {
     private storage: Storage
   ) {}
 
-  // Content Management
+  // Content Management - Unified Schema
+  
+  // Get specific section (hero, about, services, etc.)
+  async getContentSection(section: string): Promise<any> {
+    const contentRef = doc(this.firestore, 'content', section);
+    const snapshot = await getDoc(contentRef);
+    if (snapshot.exists()) {
+      return snapshot.data()['data'];
+    }
+    return null;
+  }
+
+  // Get all content sections
+  async getAllContent(): Promise<TempleContentData> {
+    const contentRef = collection(this.firestore, 'content');
+    const snapshot = await getDocs(contentRef);
+    
+    const result: TempleContentData = {};
+    snapshot.docs.forEach(doc => {
+      const section = doc.id; // 'hero', 'about', 'services', etc.
+      result[section as keyof TempleContentData] = doc.data()['data'];
+    });
+    
+    return result;
+  }
+
+  // Update specific section
+  async updateContentSection(section: string, data: any): Promise<void> {
+    const contentRef = doc(this.firestore, 'content', section);
+    await updateDoc(contentRef, {
+      section: section,
+      data: data,
+      updatedAt: Timestamp.now()
+    });
+  }
+
+  // Create new section
+  async createContentSection(section: string, data: any): Promise<void> {
+    const contentRef = doc(this.firestore, 'content', section);
+    await addDoc(collection(this.firestore, 'content'), {
+      section: section,
+      data: data,
+      updatedAt: Timestamp.now()
+    });
+  }
+
+  // Legacy methods for backward compatibility
   async getContent(): Promise<TempleContent[]> {
     const contentRef = collection(this.firestore, 'content');
     const q = query(contentRef, orderBy('section'));
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => ({
       id: doc.id,
-      ...doc.data(),
+      section: doc.data()['section'],
+      data: doc.data()['data'],
       updatedAt: doc.data()['updatedAt']?.toDate()
     } as TempleContent));
   }

@@ -18,6 +18,16 @@ export class GalleryComponent implements OnInit {
   localImages: string[] = [];
   isLoading = false;
   
+  // Pagination
+  currentPage = 0;
+  imagesPerPage = 20;
+  displayedImages: any[] = [];
+  hasMore = true;
+  
+  // Filtering
+  selectedCategory = 'all';
+  categories = ['all', 'festivals', 'daily-pooja', 'special-events', 'temple'];
+  
   // Preview modal state
   showPreview = false;
   currentImageIndex = 0;
@@ -35,8 +45,44 @@ export class GalleryComponent implements OnInit {
     // Try to load Firebase images in background
     try {
       this.images = await this.firebaseService.getGalleryImages();
+      if (this.images.length > 0) {
+        this.loadMoreImages();
+      }
     } catch (error) {
       console.error('Firebase not available, using JSON fallback:', error);
+      this.loadMoreImages(); // Load from local images
+    }
+  }
+  
+  loadMoreImages() {
+    this.isLoading = true;
+    
+    const allImages = this.images.length > 0 
+      ? this.images 
+      : this.localImages.map(url => ({ url, title: 'Temple Image' }));
+    
+    const start = this.currentPage * this.imagesPerPage;
+    const end = start + this.imagesPerPage;
+    const newImages = allImages.slice(start, end);
+    
+    this.displayedImages = [...this.displayedImages, ...newImages];
+    this.currentPage++;
+    this.hasMore = end < allImages.length;
+    this.isLoading = false;
+  }
+  
+  filterByCategory(category: string) {
+    this.selectedCategory = category;
+    this.currentPage = 0;
+    this.displayedImages = [];
+    
+    if (category === 'all') {
+      this.loadMoreImages();
+    } else {
+      // Filter images by category
+      const filtered = this.images.filter(img => img.category === category);
+      this.displayedImages = filtered.slice(0, this.imagesPerPage);
+      this.hasMore = filtered.length > this.imagesPerPage;
     }
   }
   
