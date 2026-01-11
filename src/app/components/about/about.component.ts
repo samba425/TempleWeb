@@ -1,4 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+interface AboutSection {
+  heading: string;
+  content: string;
+}
+
+interface AboutContent {
+  title: string;
+  sections: AboutSection[];
+}
 
 @Component({
   selector: 'app-about',
@@ -81,4 +92,34 @@ import { Component } from '@angular/core';
   `,
   styleUrls: ['./about.component.scss']
 })
-export class AboutComponent {}
+export class AboutComponent implements OnInit {
+  aboutContent: AboutContent | null = null;
+  
+  constructor(private http: HttpClient) {}
+  
+  ngOnInit() {
+    this.loadContent();
+  }
+  
+  private loadContent() {
+    // Try to load from Firebase first, fallback to JSON
+    this.http.get<any>('assets/data/temple-content.json').subscribe({
+      next: (data) => {
+        this.aboutContent = data.about;
+      },
+      error: (err) => {
+        console.error('Error loading content:', err);
+        // Fallback to hardcoded data
+        this.aboutContent = {
+          title: 'Lord Ayyappa - Dharma Sastha',
+          sections: [
+            {
+              heading: 'About Lord Ayyappa',
+              content: 'Lord Ayyappa, also known as Dharma Sastha, is a Hindu deity...'
+            }
+          ]
+        };
+      }
+    });
+  }
+}

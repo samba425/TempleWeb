@@ -3,16 +3,14 @@
   <section class="hero">
     <div class="hero-carousel">
       <div class="carousel-track">
-        <div class="carousel-slide" style="background-image: url('assets/images/480614142_1340522376959783_2104656479553551940_n.jpg');"></div>
-        <div class="carousel-slide" style="background-image: url('assets/images/486472084_1196186785851212_8874622736568729395_n.jpg');"></div>
-        <div class="carousel-slide" style="background-image: url('assets/images/474645972_1102912134661594_7088183194580120380_n.jpg');"></div>
+        <div class="carousel-slide" *ngFor="let image of hero.carouselImages" [style.background-image]="'url(' + image + ')'"></div>
       </div>
     </div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <h1 class="fade-in-up">UTTHARANDHRA SABARIMALA</h1>
-      <p class="telugu-text fade-in-up">ఉత్తరాంధ్ర శబరిమల (అయ్యప్ప స్వామి ఆలయం)</p>
-      <p class="subtitle fade-in-up">Swamiye Saranam Ayyappa</p>
+      <h1 class="fade-in-up">{{ hero.title }}</h1>
+      <p class="telugu-text fade-in-up">{{ hero.teluguText }}</p>
+      <p class="subtitle fade-in-up">{{ hero.subtitle }}</p>
       <div class="hero-actions fade-in-up">
         <button mat-raised-button color="primary" routerLink="/donations">
           <mat-icon>volunteer_activism</mat-icon>
@@ -77,11 +75,11 @@
       <h2 class="section-title text-center">Upcoming Events & Poojas</h2>
       <div class="events-grid">
         <mat-card *ngFor="let event of upcomingEvents" class="event-card">
-          <mat-icon class="event-icon">event</mat-icon>
+          <mat-icon class="event-icon">{{ event.icon || 'event' }}</mat-icon>
           <div class="event-details">
-            <h3>{{ event.title }}</h3>
+            <h3>{{ event.name }}</h3>
             <p><mat-icon>calendar_today</mat-icon> {{ event.date }}</p>
-            <p><mat-icon>access_time</mat-icon> {{ event.time }}</p>
+            <p>{{ event.description }}</p>
           </div>
         </mat-card>
       </div>
