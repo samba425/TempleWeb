@@ -1,0 +1,36 @@
+# .gitignore
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Angular
+/dist/
+/tmp/
+/out-tsc/
+/bazel-out
+.angular/
+
+# IDE
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+src/environments/environment.prod.ts
+src/environments/environment.ts
+
+# Firebase
+.firebase/
+.firebaserc

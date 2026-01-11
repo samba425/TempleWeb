@@ -1,0 +1,71 @@
+<div class="gallery" (window:keydown)="handleKeyPress($event)">
+  <section class="page-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1>🕉️ Temple Gallery</h1>
+      <p>Glimpses of Divine Moments at UTTHARANDHRA SABARIMALA</p>
+    </div>
+  </section>
+
+  <section class="section-padding">
+    <div class="container">
+      <!-- Local Images Gallery -->
+      <div class="gallery-grid">
+        <div class="gallery-card" *ngFor="let image of localImages; let i = index" (click)="openPreview(image, i)">
+          <div class="card-image">
+            <img [src]="image" alt="Temple Gallery Image {{i + 1}}" loading="lazy">
+            <div class="card-overlay">
+              <mat-icon>zoom_in</mat-icon>
+              <p>View Image</p>
+            </div>
+          </div>
+          <div class="card-footer">
+            <mat-icon>photo_camera</mat-icon>
+            <span>Temple Moment {{i + 1}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Firebase Images (if available) -->
+      <div class="gallery-grid firebase-gallery" *ngIf="images.length > 0" style="margin-top: 2rem;">
+        <div class="gallery-card" *ngFor="let image of images; let i = index">
+          <div class="card-image">
+            <img [src]="image.imageUrl" [alt]="image.title" loading="lazy">
+            <div class="card-overlay">
+              <mat-icon>zoom_in</mat-icon>
+              <p>View Image</p>
+            </div>
+          </div>
+          <div class="card-footer">
+            <mat-icon>photo_camera</mat-icon>
+            <span>{{ image.title }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Image Preview Modal -->
+  <div class="preview-modal" *ngIf="showPreview" (click)="closePreview()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <button class="close-btn" (click)="closePreview()" mat-icon-button>
+        <mat-icon>close</mat-icon>
+      </button>
+      
+      <button class="nav-btn prev-btn" (click)="previousImage()" mat-icon-button>
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      
+      <div class="preview-image-container">
+        <img [src]="currentImage" alt="Preview Image" class="preview-image">
+        <div class="preview-info">
+          <p>Image {{currentImageIndex + 1}} of {{localImages.length}}</p>
+        </div>
+      </div>
+      
+      <button class="nav-btn next-btn" (click)="nextImage()" mat-icon-button>
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

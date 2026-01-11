@@ -1,0 +1,157 @@
+<div class="contact">
+  <section class="page-hero">
+    <div class="hero-content">
+      <h1>Contact Us</h1>
+      <p class="temple-name">{{ templeInfo.name }}</p>
+      <p class="telugu-name">{{ templeInfo.teluguName }}</p>
+      <p class="rating">{{ templeInfo.rating }}</p>
+    </div>
+  </section>
+
+  <section class="section-padding">
+    <div class="container">
+      <!-- Temple Information Cards -->
+      <div class="info-cards-grid">
+        <mat-card class="info-card">
+          <div class="card-icon">
+            <mat-icon>location_on</mat-icon>
+          </div>
+          <h3>Visit Us</h3>
+          <p>{{ templeInfo.address }}</p>
+          <p class="coordinates">{{ templeInfo.coordinates }}</p>
+        </mat-card>
+
+        <mat-card class="info-card">
+          <div class="card-icon">
+            <mat-icon>phone</mat-icon>
+          </div>
+          <h3>Call Us</h3>
+          <p><a href="tel:{{ templeInfo.phone }}">{{ templeInfo.phone }}</a></p>
+          <p class="subtitle">Available during temple hours</p>
+        </mat-card>
+
+        <mat-card class="info-card">
+          <div class="card-icon">
+            <mat-icon>language</mat-icon>
+          </div>
+          <h3>Website</h3>
+          <p><a href="http://{{ templeInfo.website }}" target="_blank">{{ templeInfo.website }}</a></p>
+          <p class="subtitle">Visit our official website</p>
+        </mat-card>
+
+        <mat-card class="info-card">
+          <div class="card-icon">
+            <mat-icon>email</mat-icon>
+          </div>
+          <h3>Email Us</h3>
+          <p><a href="mailto:{{ templeInfo.email }}">{{ templeInfo.email }}</a></p>
+          <p class="subtitle">We'll respond within 24 hours</p>
+        </mat-card>
+      </div>
+
+      <!-- Google Maps Section -->
+      <div class="map-section">
+        <h2>Find Us on Google Maps</h2>
+        <div class="map-container">
+          <iframe 
+            [src]="templeInfo.mapEmbed | safe: 'resourceUrl'"
+            width="100%" 
+            height="450" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+        <div class="map-links">
+          <a href="https://goo.gl/maps/your-temple-link" target="_blank" mat-raised-button color="primary">
+            <mat-icon>directions</mat-icon>
+            Get Directions
+          </a>
+          <a href="https://goo.gl/maps/your-temple-link" target="_blank" mat-raised-button>
+            <mat-icon>open_in_new</mat-icon>
+            Open in Google Maps
+          </a>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="contact-form-section">
+        <mat-card class="contact-form-card">
+          <h2>Send us a Message</h2>
+          <p class="form-subtitle">Have a question or want to know more about our services? We're here to help!</p>
+          
+          <form [formGroup]="contactForm" (ngSubmit)="submitForm()">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Your Name</mat-label>
+                <input matInput formControlName="name" placeholder="Enter your full name">
+                <mat-icon matPrefix>person</mat-icon>
+                <mat-error *ngIf="contactForm.get('name')?.hasError('required')">
+                  Name is required
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Email Address</mat-label>
+                <input matInput type="email" formControlName="email" placeholder="your@email.com">
+                <mat-icon matPrefix>email</mat-icon>
+                <mat-error *ngIf="contactForm.get('email')?.hasError('required')">
+                  Email is required
+                </mat-error>
+                <mat-error *ngIf="contactForm.get('email')?.hasError('email')">
+                  Enter a valid email
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Subject</mat-label>
+              <input matInput formControlName="subject" placeholder="What is this regarding?">
+              <mat-icon matPrefix>subject</mat-icon>
+              <mat-error *ngIf="contactForm.get('subject')?.hasError('required')">
+                Subject is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Message</mat-label>
+              <textarea matInput formControlName="message" rows="6" placeholder="Write your message here..."></textarea>
+              <mat-icon matPrefix>message</mat-icon>
+              <mat-error *ngIf="contactForm.get('message')?.hasError('required')">
+                Message is required
+              </mat-error>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" type="submit" class="submit-btn" [disabled]="contactForm.invalid">
+              <mat-icon>send</mat-icon>
+              Send Message
+            </button>
+          </form>
+        </mat-card>
+      </div>
+
+      <!-- Temple Timings -->
+      <div class="temple-timings">
+        <h2>Temple Timings</h2>
+        <div class="timings-grid">
+          <mat-card class="timing-card">
+            <mat-icon>wb_twilight</mat-icon>
+            <h3>Morning Pooja</h3>
+            <p>6:00 AM - 12:00 PM</p>
+          </mat-card>
+          <mat-card class="timing-card">
+            <mat-icon>wb_sunny</mat-icon>
+            <h3>Afternoon Break</h3>
+            <p>12:00 PM - 5:00 PM</p>
+          </mat-card>
+          <mat-card class="timing-card active">
+            <mat-icon>nights_stay</mat-icon>
+            <h3>Evening Pooja</h3>
+            <p>5:00 PM - 9:00 PM</p>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,23 @@
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-wrapper">
+      <div class="logo">
+        <mat-icon class="temple-icon">temple_hindu</mat-icon>
+        <span class="temple-name">Uttharandhra Sabarimala</span>
+      </div>
+      
+      <button class="menu-toggle" (click)="toggleMenu()" mat-icon-button>
+        <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
+      </button>
+
+      <ul class="nav-links" [class.active]="isMenuOpen">
+        <li><a routerLink="/" (click)="closeMenu()" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a></li>
+        <li><a routerLink="/about" (click)="closeMenu()" routerLinkActive="active">About</a></li>
+        <li><a routerLink="/services" (click)="closeMenu()" routerLinkActive="active">Services</a></li>
+        <li><a routerLink="/gallery" (click)="closeMenu()" routerLinkActive="active">Gallery</a></li>
+        <li><a routerLink="/donations" (click)="closeMenu()" routerLinkActive="active" class="donate-link">Donate</a></li>
+        <li><a routerLink="/contact" (click)="closeMenu()" routerLinkActive="active">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>

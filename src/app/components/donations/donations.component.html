@@ -1,0 +1,116 @@
+<div class="donations">
+  <section class="donations-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1>Support Our Temple</h1>
+      <p>Your generous donations help us serve the devotees and maintain the temple</p>
+    </div>
+  </section>
+
+  <section class="donation-form-section section-padding">
+    <div class="container">
+      <div class="donation-wrapper">
+        <div class="donation-info">
+          <h2>Why Donate?</h2>
+          <p>Your contributions support:</p>
+          <ul>
+            <li><mat-icon>check_circle</mat-icon> Daily poojas and rituals</li>
+            <li><mat-icon>check_circle</mat-icon> Temple maintenance and development</li>
+            <li><mat-icon>check_circle</mat-icon> Annadanam (Free meals for devotees)</li>
+            <li><mat-icon>check_circle</mat-icon> Educational programs</li>
+            <li><mat-icon>check_circle</mat-icon> Community service activities</li>
+          </ul>
+
+          <mat-card class="trust-card">
+            <mat-icon>verified</mat-icon>
+            <div>
+              <h3>100% Secure Payment</h3>
+              <p>Powered by Razorpay - India's most trusted payment gateway</p>
+            </div>
+          </mat-card>
+        </div>
+
+        <mat-card class="donation-form-card">
+          <h2>Make a Donation</h2>
+          <form [formGroup]="donationForm" (ngSubmit)="processDonation()">
+            <div class="amount-selection">
+              <label>Select Amount</label>
+              <div class="amount-buttons">
+                <button 
+                  type="button"
+                  mat-raised-button
+                  *ngFor="let amount of predefinedAmounts"
+                  [class.selected]="donationForm.get('amount')?.value === amount"
+                  (click)="selectAmount(amount)">
+                  ₹{{ amount }}
+                </button>
+              </div>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Custom Amount (₹)</mat-label>
+              <input matInput type="number" formControlName="amount" min="100">
+              <mat-error *ngIf="donationForm.get('amount')?.hasError('required')">
+                Amount is required
+              </mat-error>
+              <mat-error *ngIf="donationForm.get('amount')?.hasError('min')">
+                Minimum amount is ₹100
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Your Name</mat-label>
+              <input matInput formControlName="donorName" placeholder="Enter your full name">
+              <mat-error *ngIf="donationForm.get('donorName')?.hasError('required')">
+                Name is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" formControlName="email" placeholder="your@email.com">
+              <mat-error *ngIf="donationForm.get('email')?.hasError('required')">
+                Email is required
+              </mat-error>
+              <mat-error *ngIf="donationForm.get('email')?.hasError('email')">
+                Enter a valid email
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Phone Number</mat-label>
+              <input matInput formControlName="phone" placeholder="10 digit mobile number">
+              <mat-error *ngIf="donationForm.get('phone')?.hasError('required')">
+                Phone number is required
+              </mat-error>
+              <mat-error *ngIf="donationForm.get('phone')?.hasError('pattern')">
+                Enter a valid 10 digit number
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Message (Optional)</mat-label>
+              <textarea matInput formControlName="message" rows="3" placeholder="Any special prayer request or message"></textarea>
+            </mat-form-field>
+
+            <button 
+              mat-raised-button 
+              color="primary" 
+              type="submit"
+              class="submit-button"
+              [disabled]="isProcessing">
+              <mat-icon *ngIf="!isProcessing">payment</mat-icon>
+              <mat-spinner *ngIf="isProcessing" diameter="20"></mat-spinner>
+              {{ isProcessing ? 'Processing...' : 'Proceed to Payment' }}
+            </button>
+
+            <p class="secure-note">
+              <mat-icon>lock</mat-icon>
+              Your payment information is secure and encrypted
+            </p>
+          </form>
+        </mat-card>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,136 @@
+<div class="home">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-carousel">
+      <div class="carousel-track">
+        <div class="carousel-slide" style="background-image: url('assets/images/480614142_1340522376959783_2104656479553551940_n.jpg');"></div>
+        <div class="carousel-slide" style="background-image: url('assets/images/486472084_1196186785851212_8874622736568729395_n.jpg');"></div>
+        <div class="carousel-slide" style="background-image: url('assets/images/474645972_1102912134661594_7088183194580120380_n.jpg');"></div>
+      </div>
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 class="fade-in-up">UTTHARANDHRA SABARIMALA</h1>
+      <p class="telugu-text fade-in-up">ఉత్తరాంధ్ర శబరిమల (అయ్యప్ప స్వామి ఆలయం)</p>
+      <p class="subtitle fade-in-up">Swamiye Saranam Ayyappa</p>
+      <div class="temple-info fade-in-up">
+        <p><mat-icon>location_on</mat-icon> Pendurthi, Visakhapatnam, Andhra Pradesh</p>
+        <p><mat-icon>star</mat-icon> 4.7 Rating (361 Reviews)</p>
+      </div>
+      <div class="hero-actions fade-in-up">
+        <button mat-raised-button color="primary" routerLink="/donations">
+          <mat-icon>volunteer_activism</mat-icon>
+          Make a Donation
+        </button>
+        <button mat-raised-button color="accent" routerLink="/about">
+          Learn More
+        </button>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <div class="scroll-dots">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+      <div class="scroll-text">
+        <mat-icon>keyboard_arrow_down</mat-icon>
+        <p>Scroll</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features section-padding">
+    <div class="container">
+      <h2 class="section-title text-center">Temple Services</h2>
+      <div class="features-grid">
+        <mat-card *ngFor="let feature of features" class="feature-card fade-in-up">
+          <mat-icon class="feature-icon">{{ feature.icon }}</mat-icon>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.description }}</p>
+        </mat-card>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Preview -->
+  <section class="about-preview section-padding">
+    <div class="container">
+      <div class="about-content">
+        <div class="about-text">
+          <h2 class="gradient-text">About Lord Ayyappa</h2>
+          <p>Lord Ayyappa, also known as Dharma Sastha, is a Hindu deity who is believed to be an incarnation of Dharma. The temple at Sabarimala, dedicated to Lord Ayyappa, is one of the most sacred pilgrimage sites in India.</p>
+          <p>Every year, millions of devotees from across the world undertake the pilgrimage to seek the blessings of Lord Ayyappa, observing strict penance and discipline.</p>
+          <button mat-raised-button color="primary" routerLink="/about">
+            Read More
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+        <div class="about-image">
+          <img src="assets/images/ayyappa.jpg" alt="Lord Ayyappa" onerror="this.src='https://via.placeholder.com/500x600/1a1a1a/ff6b35?text=Lord+Ayyappa'">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Upcoming Events -->
+  <section class="events section-padding">
+    <div class="container">
+      <h2 class="section-title text-center">Upcoming Events & Poojas</h2>
+      <div class="events-grid">
+        <mat-card *ngFor="let event of upcomingEvents" class="event-card">
+          <mat-icon class="event-icon">event</mat-icon>
+          <div class="event-details">
+            <h3>{{ event.title }}</h3>
+            <p><mat-icon>calendar_today</mat-icon> {{ event.date }}</p>
+            <p><mat-icon>access_time</mat-icon> {{ event.time }}</p>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery Showcase -->
+  <section class="gallery-showcase section-padding">
+    <div class="container">
+      <div class="section-header">
+        <h2>📸 Temple Gallery</h2>
+        <p>Sacred moments captured in time</p>
+        <a routerLink="/gallery" mat-button class="view-all-btn">
+          View All
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+      
+      <div class="gallery-scroll-container">
+        <div class="gallery-scroll">
+          <div class="gallery-item" *ngFor="let image of galleryImages">
+            <img [src]="image" alt="Temple Gallery" loading="lazy">
+            <div class="gallery-overlay">
+              <mat-icon>visibility</mat-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="cta section-padding">
+    <div class="container text-center">
+      <h2>Support Our Temple</h2>
+      <p>Your contributions help us maintain the temple and serve the community</p>
+      <div class="cta-buttons">
+        <button mat-raised-button class="primary" routerLink="/donations">
+          <mat-icon>favorite</mat-icon>
+          Donate Now
+        </button>
+        <button mat-stroked-button class="secondary" routerLink="/contact">
+          <mat-icon>contact_mail</mat-icon>
+          Contact Us
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
