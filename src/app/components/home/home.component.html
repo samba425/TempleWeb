@@ -8,7 +8,9 @@
     </div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <h1 class="fade-in-up">{{ hero.title }}</h1>
+      <div class="hero-title-container">
+        <h1 class="fade-in-up">{{ hero.title }}</h1>
+      </div>
       <p class="telugu-text fade-in-up">{{ hero.teluguText }}</p>
       <p class="subtitle fade-in-up">{{ hero.subtitle }}</p>
       <div class="hero-actions fade-in-up">
@@ -34,6 +36,140 @@
       </div>
     </div>
   </section>
+
+  <!-- Announcements Banner -->
+  <section class="announcements-banner" *ngIf="activeAnnouncements && activeAnnouncements.length > 0">
+    <div class="container">
+      <div class="announcements-header">
+        <div class="header-decoration">
+          <div class="om-symbol">ॐ</div>
+        </div>
+        <h2>Temple Announcements</h2>
+        <div class="header-decoration">
+          <div class="om-symbol">ॐ</div>
+        </div>
+      </div>
+      <div class="announcements-carousel">
+        <div class="carousel-wrapper">
+          <div class="announcements-track" 
+               [style.animation-duration]="(activeAnnouncements.length * 8) + 's'">
+            <!-- Original set -->
+            <div class="announcement-card" 
+                 *ngFor="let announcement of activeAnnouncements"
+                 (click)="openAnnouncementModal(announcement)">
+              <div class="card-image">
+                <img [src]="announcement.imageUrl || 'assets/images/1.jpg'" [alt]="announcement.title">
+                <div class="image-overlay"></div>
+                <div class="priority-badge">
+                  <mat-icon>notifications_active</mat-icon>
+                  <span>{{ announcement.isActive ? 'Active' : 'Inactive' }}</span>
+                </div>
+              </div>
+              <div class="card-content">
+                <div class="card-decoration">
+                  <span class="decoration-line"></span>
+                  <mat-icon class="temple-icon">temple_hindu</mat-icon>
+                  <span class="decoration-line"></span>
+                </div>
+                <h3>{{ announcement.title }}</h3>
+                <p class="card-message">{{ announcement.message.length > 80 ? (announcement.message | slice:0:80) + '...' : announcement.message }}</p>
+                <div class="card-footer">
+                  <div class="date-info">
+                    <mat-icon>schedule</mat-icon>
+                    <span>Until {{ announcement.endDate | date:'MMM d, y' }}</span>
+                  </div>
+                  <button mat-button class="read-more">
+                    Read More
+                    <mat-icon>arrow_forward</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Duplicate set for seamless loop -->
+            <div class="announcement-card" 
+                 *ngFor="let announcement of activeAnnouncements"
+                 (click)="openAnnouncementModal(announcement)">
+              <div class="card-image">
+                <img [src]="announcement.imageUrl || 'assets/images/1.jpg'" [alt]="announcement.title">
+                <div class="image-overlay"></div>
+                <div class="priority-badge">
+                  <mat-icon>notifications_active</mat-icon>
+                  <span>{{ announcement.isActive ? 'Active' : 'Inactive' }}</span>
+                </div>
+              </div>
+              <div class="card-content">
+                <div class="card-decoration">
+                  <span class="decoration-line"></span>
+                  <mat-icon class="temple-icon">temple_hindu</mat-icon>
+                  <span class="decoration-line"></span>
+                </div>
+                <h3>{{ announcement.title }}</h3>
+                <p class="card-message">{{ announcement.message.length > 80 ? (announcement.message | slice:0:80) + '...' : announcement.message }}</p>
+                <div class="card-footer">
+                  <div class="date-info">
+                    <mat-icon>schedule</mat-icon>
+                    <span>Until {{ announcement.endDate | date:'MMM d, y' }}</span>
+                  </div>
+                  <button mat-button class="read-more">
+                    Read More
+                    <mat-icon>arrow_forward</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Announcement Modal -->
+  <div class="announcement-modal-overlay" *ngIf="selectedAnnouncement" (click)="closeAnnouncementModal()">
+    <div class="announcement-modal" (click)="$event.stopPropagation()">
+      <button class="modal-close" mat-icon-button (click)="closeAnnouncementModal()">
+        <mat-icon>close</mat-icon>
+      </button>
+      <div class="modal-image">
+        <img [src]="selectedAnnouncement.imageUrl || 'assets/images/1.jpg'" [alt]="selectedAnnouncement.title">
+        <div class="modal-image-overlay"></div>
+        <div class="modal-badge">
+          <mat-icon>{{ selectedAnnouncement.isActive ? 'check_circle' : 'cancel' }}</mat-icon>
+          <span>{{ selectedAnnouncement.isActive ? 'ACTIVE' : 'INACTIVE' }}</span>
+        </div>
+      </div>
+      <div class="modal-content">
+        <div class="modal-decoration">
+          <span class="decoration-line"></span>
+          <mat-icon class="om-icon">self_improvement</mat-icon>
+          <span class="decoration-line"></span>
+        </div>
+        <h2>{{ selectedAnnouncement.title }}</h2>
+        <p class="modal-message">{{ selectedAnnouncement.message }}</p>
+        <div class="modal-footer">
+          <div class="modal-dates">
+            <div class="date-item">
+              <mat-icon>event</mat-icon>
+              <div>
+                <span class="date-label">Starts</span>
+                <span class="date-value">{{ selectedAnnouncement.startDate | date:'fullDate' }}</span>
+              </div>
+            </div>
+            <div class="date-item">
+              <mat-icon>event_available</mat-icon>
+              <div>
+                <span class="date-label">Valid Until</span>
+                <span class="date-value">{{ selectedAnnouncement.endDate | date:'fullDate' }}</span>
+              </div>
+            </div>
+          </div>
+          <button mat-raised-button color="primary" (click)="closeAnnouncementModal()">
+            <mat-icon>done</mat-icon>
+            Got It
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Features Section -->
   <section class="features section-padding">
@@ -63,7 +199,7 @@
           </button>
         </div>
         <div class="about-image">
-          <img src="assets/images/480614142_1340522376959783_2104656479553551940_n.jpg" alt="Lord Ayyappa">
+          <img src="assets/images/1.jpg" alt="Lord Ayyappa">
         </div>
       </div>
     </div>

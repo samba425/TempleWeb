@@ -1,11 +1,13 @@
 import { Component, HostListener } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   template: `
-    <app-navbar></app-navbar>
+    <app-navbar *ngIf="!isAdminRoute"></app-navbar>
     <router-outlet></router-outlet>
-    <app-footer></app-footer>
+    <app-footer *ngIf="!isAdminRoute"></app-footer>
     <button 
       *ngIf="showScrollButton" 
       class="scroll-to-top" 
@@ -70,6 +72,16 @@ import { Component, HostListener } from '@angular/core';
 export class AppComponent {
   title = 'UTTHARANDHRA SABARIMALA';
   showScrollButton = false;
+  isAdminRoute = false;
+
+  constructor(private router: Router) {
+    // Check if current route is admin
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      this.isAdminRoute = event.url.startsWith('/admin');
+    });
+  }
 
   @HostListener('window:scroll', [])
   onWindowScroll() {

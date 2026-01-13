@@ -52,6 +52,19 @@ export interface EventItem {
   date: string;
   description: string;
   icon: string;
+  startDate?: string; // ISO date string for event start
+  endDate?: string;   // ISO date string for event end (auto-remove after endDate + 2 days)
+}
+
+export interface Announcement {
+  id?: string;
+  title: string;
+  message: string;
+  startDate: string;  // ISO date string
+  endDate: string;    // ISO date string (auto-remove after endDate + 2 days)
+  priority: 'high' | 'medium' | 'low';
+  isActive?: boolean;
+  imageUrl?: string;  // Optional image URL for the announcement
 }
 
 export interface FeatureItem {
@@ -79,6 +92,7 @@ export interface TempleContentData {
   events?: EventItem[];
   features?: FeatureItem[];
   contact?: ContactInfo;
+  announcements?: Announcement[];
 }
 
 // For Firestore document metadata
@@ -212,9 +226,67 @@ export class FirebaseService {
   }
 
   async uploadImage(file: File, path: string): Promise<string> {
-    const storageRef = ref(this.storage, path);
-    await uploadBytes(storageRef, file);
-    return await getDownloadURL(storageRef);
+    // Compress image before converting to base64 (fits in Firestore, loads faster)
+    const compressedFile = await this.compressImage(file, 800, 0.7); // Max 800px width, 70% quality
+    
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = () => {
+        const base64String = reader.result as string;
+        resolve(base64String);
+      };
+      
+      reader.onerror = (error) => {
+        reject(error);
+      };
+      
+      reader.readAsDataURL(compressedFile);
+    });
+  }
+
+  private compressImage(file: File, maxWidth: number, quality: number): Promise<File> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      img.onload = () => {
+        // Calculate new dimensions (maintain aspect ratio)
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+
+        // Set canvas size and draw compressed image
+        canvas.width = width;
+        canvas.height = height;
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        // Convert to blob then file
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name, {
+                type: 'image/jpeg',
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            } else {
+              reject(new Error('Image compression failed'));
+            }
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
+    });
   }
 
   async addGalleryImage(data: Omit<GalleryImage, 'id'>): Promise<string> {
@@ -227,17 +299,10 @@ export class FirebaseService {
   }
 
   async deleteGalleryImage(id: string, imageUrl: string): Promise<void> {
-    // Delete from Firestore
+    // Delete from Firestore (base64 images stored directly in Firestore)
     const galleryRef = doc(this.firestore, 'gallery', id);
     await deleteDoc(galleryRef);
-    
-    // Delete from Storage
-    try {
-      const imageRef = ref(this.storage, imageUrl);
-      await deleteObject(imageRef);
-    } catch (error) {
-      console.error('Error deleting image from storage:', error);
-    }
+    // No separate storage to clean up - base64 is deleted with the document
   }
 
   // Donation Management
@@ -278,4 +343,75 @@ export class FirebaseService {
     }
     return null;
   }
+
+  // Announcements Management
+  async getAnnouncements(): Promise<Announcement[]> {
+    const announcementsRef = collection(this.firestore, 'announcements');
+    const q = query(announcementsRef, orderBy('createdAt', 'desc'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as unknown as Announcement));
+  }
+
+  async getAnnouncementById(id: string): Promise<Announcement | null> {
+    const announcementRef = doc(this.firestore, 'announcements', id);
+    const snapshot = await getDoc(announcementRef);
+    if (snapshot.exists()) {
+      return {
+        id: snapshot.id,
+        ...snapshot.data()
+      } as unknown as Announcement;
+    }
+    return null;
+  }
+
+  async createAnnouncement(data: Omit<Announcement, 'id' | 'createdAt'>): Promise<string> {
+    const announcementsRef = collection(this.firestore, 'announcements');
+    const docRef = await addDoc(announcementsRef, {
+      ...data,
+      createdAt: Timestamp.now()
+    });
+    return docRef.id;
+  }
+
+  async updateAnnouncement(id: string, data: Partial<Announcement>): Promise<void> {
+    const announcementRef = doc(this.firestore, 'announcements', id);
+    await updateDoc(announcementRef, data);
+  }
+
+  async deleteAnnouncement(id: string): Promise<void> {
+    const announcementRef = doc(this.firestore, 'announcements', id);
+    await deleteDoc(announcementRef);
+  }
+
+  // Get active announcements (for public display)
+  async getActiveAnnouncements(): Promise<Announcement[]> {
+    const announcements = await this.getAnnouncements();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return announcements.filter(announcement => {
+      // Check if manually disabled
+      if (announcement.isActive === false) {
+        return false;
+      }
+
+      const startDate = new Date(announcement.startDate);
+      const endDate = new Date(announcement.endDate);
+
+      // Add 2 days buffer after end date
+      const removalDate = new Date(endDate);
+      removalDate.setDate(removalDate.getDate() + 2);
+
+      // Check if within active date range (including 2-day buffer)
+      return today >= startDate && today <= removalDate;
+    }).sort((a, b) => {
+      // Sort by priority: high > medium > low
+      const priorityOrder: any = { high: 1, medium: 2, low: 3 };
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    });
+  }
 }
+

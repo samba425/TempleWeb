@@ -41,6 +41,19 @@
       .temple-icon {
         transform: rotate(15deg);
       }
+
+      .om-symbol-nav {
+        transform: scale(1.1);
+      }
+    }
+
+    .om-symbol-nav {
+      font-size: 1.5rem;
+      color: #d4651a;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(212, 101, 26, 0.4);
+      transition: all 0.3s ease;
+      animation: navOmGlow 3s ease-in-out infinite;
     }
 
     .temple-icon {
@@ -53,7 +66,10 @@
 
     .temple-name {
       font-family: 'Playfair Display', serif;
-      color: #f5f1ed;
+      background: linear-gradient(45deg, #fff, #d4651a, #ffa500);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
   }
 
@@ -218,6 +234,19 @@
         }
       }
     }
+  }
+}
+
+// Om symbol glow animation for navbar
+@keyframes navOmGlow {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(212, 101, 26, 0.4),
+                 0 0 15px rgba(212, 101, 26, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 15px rgba(212, 101, 26, 0.6),
+                 0 0 25px rgba(212, 101, 26, 0.4),
+                 0 0 35px rgba(212, 101, 26, 0.2);
   }
 }
 

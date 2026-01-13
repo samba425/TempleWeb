@@ -2,33 +2,57 @@
   <div class="container">
     <div class="footer-content">
       <div class="footer-section">
-        <h3>UTTHARANDHRA SABARIMALA</h3>
-        <p>Dedicated to Lord Ayyappa, spreading divine blessings and spiritual enlightenment in Visakhapatnam.</p>
+        <h3>{{ content?.contact?.templeName || 'UTTHARANDHRA SABARIMALA' }}</h3>
+        <p>{{ content?.footer?.description || 'Dedicated to Lord Ayyappa, spreading divine blessings and spiritual enlightenment in Visakhapatnam.' }}</p>
         <div class="social-links">
-          <a href="#" aria-label="Facebook"><mat-icon>facebook</mat-icon></a>
-          <a href="#" aria-label="Twitter"><mat-icon>share</mat-icon></a>
-          <a href="#" aria-label="Instagram"><mat-icon>photo_camera</mat-icon></a>
-          <a href="#" aria-label="YouTube"><mat-icon>play_circle</mat-icon></a>
+          <a *ngIf="content?.footer?.socialLinks?.facebook" 
+             [href]="content!.footer!.socialLinks!.facebook" 
+             target="_blank" 
+             rel="noopener noreferrer" 
+             aria-label="Facebook">
+            <mat-icon>facebook</mat-icon>
+          </a>
+          <a *ngIf="content?.footer?.socialLinks?.twitter" 
+             [href]="content!.footer!.socialLinks!.twitter" 
+             target="_blank" 
+             rel="noopener noreferrer" 
+             aria-label="Twitter">
+            <mat-icon>share</mat-icon>
+          </a>
+          <a *ngIf="content?.footer?.socialLinks?.instagram" 
+             [href]="content!.footer!.socialLinks!.instagram" 
+             target="_blank" 
+             rel="noopener noreferrer" 
+             aria-label="Instagram">
+            <mat-icon>photo_camera</mat-icon>
+          </a>
+          <a *ngIf="content?.footer?.socialLinks?.youtube" 
+             [href]="content!.footer!.socialLinks!.youtube" 
+             target="_blank" 
+             rel="noopener noreferrer" 
+             aria-label="YouTube">
+            <mat-icon>play_circle</mat-icon>
+          </a>
         </div>
       </div>
 
       <div class="footer-section">
         <h4>Quick Links</h4>
         <ul>
-          <li><a routerLink="/about">About Temple</a></li>
-          <li><a routerLink="/services">Services & Rituals</a></li>
-          <li><a routerLink="/gallery">Photo Gallery</a></li>
-          <li><a routerLink="/donations">Make Donation</a></li>
+          <li *ngFor="let link of content?.footer?.quickLinks || defaultQuickLinks">
+            <a [routerLink]="link.route">{{ link.label }}</a>
+          </li>
         </ul>
       </div>
 
       <div class="footer-section">
         <h4>Temple Timings</h4>
         <ul>
-          <li>Morning: 5:00 AM - 12:00 PM</li>
-          <li>Evening: 5:00 PM - 9:00 PM</li>
-          <li>Special Poojas on Saturdays</li>
-          <li>Mandala Season: Nov - Jan</li>
+          <li>Morning: {{ content?.contact?.timings?.morning || '5:00 AM - 12:00 PM' }}</li>
+          <li>Evening: {{ content?.contact?.timings?.evening || '5:00 PM - 9:00 PM' }}</li>
+          <li *ngIf="content?.footer?.additionalInfo">{{ content!.footer!.additionalInfo }}</li>
+          <li *ngIf="!content?.footer?.additionalInfo">Special Poojas on Saturdays</li>
+          <li *ngIf="!content?.footer?.additionalInfo">Mandala Season: Nov - Jan</li>
         </ul>
       </div>
 
@@ -37,26 +61,42 @@
         <div class="contact-row">
           <div class="contact-item">
             <mat-icon>location_on</mat-icon>
-            <span>Aditya Nagar, Pendurthi, Visakhapatnam, Andhra Pradesh 531173</span>
+            <span>{{ content?.contact?.address || 'Aditya Nagar, Pendurthi, Visakhapatnam, Andhra Pradesh 531173' }}</span>
           </div>
-          <div class="contact-item">
+          <div class="contact-item" *ngIf="content?.contact?.phone">
             <mat-icon>phone</mat-icon>
-            <span>+91 94907 08933</span>
+            <span>{{ content!.contact!.phone }}</span>
           </div>
-          <div class="contact-item">
+          <div class="contact-item" *ngIf="content?.contact?.email">
             <mat-icon>email</mat-icon>
-            <span>info&#64;ayyappasevatrust.org</span>
+            <span>{{ content!.contact!.email }}</span>
           </div>
-          <div class="contact-item">
+          <div class="contact-item" *ngIf="content?.contact?.website">
             <mat-icon>language</mat-icon>
-            <span>ayyappasevatrust.org</span>
+            <span>{{ content!.contact!.website }}</span>
           </div>
         </div>
       </div>
     </div>
 
     <div class="footer-bottom">
-      <p>&copy; {{ currentYear }} UTTHARANDHRA SABARIMALA. All rights reserved.</p>
+      <p>&copy; {{ currentYear }} {{ content?.contact?.templeName || 'UTTHARANDHRA SABARIMALA' }}. All rights reserved.</p>
+      
+      <div class="sponsors-section" *ngIf="hasSponsors()">
+        <p class="sponsors-label">Sponsored and developed by:</p>
+        <div class="sponsors-list">
+          <span *ngFor="let sponsor of content!.footer!.sponsors; let last = last" class="sponsor-item">
+            <span class="sponsor-name">{{ sponsor.name }}</span>
+            <span class="sponsor-role" *ngIf="sponsor.role"> ({{ sponsor.role }})</span>
+            <span *ngIf="!last" class="separator"> • </span>
+          </span>
+        </div>
+      </div>
+
+      <p class="developer-credit" *ngIf="!hasSponsors()">
+        Sponsored and developed by <span class="developer-name">Samba Siva Rao</span>
+      </p>
+
       <p><a routerLink="/admin/login" class="admin-link">Admin Login</a></p>
     </div>
   </div>

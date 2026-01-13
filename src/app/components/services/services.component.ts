@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { ContentService } from '../../services/content.service';
 
 interface Service {
   name: string;
@@ -34,22 +34,20 @@ interface Service {
 export class ServicesComponent implements OnInit {
   services: Service[] = [];
   
-  constructor(private http: HttpClient) {}
+  constructor(private contentService: ContentService) {}
   
   ngOnInit() {
     this.loadServices();
   }
   
-  private loadServices() {
-    this.http.get<any>('assets/data/temple-content.json').subscribe({
-      next: (data) => {
-        this.services = data.services || this.getDefaultServices();
-      },
-      error: (err) => {
-        console.error('Error loading services:', err);
-        this.services = this.getDefaultServices();
-      }
-    });
+  private async loadServices() {
+    try {
+      const data = await this.contentService.getContent();
+      this.services = data.services || this.getDefaultServices();
+    } catch (error) {
+      console.error('Error loading services:', error);
+      this.services = this.getDefaultServices();
+    }
   }
   
   private getDefaultServices(): Service[] {

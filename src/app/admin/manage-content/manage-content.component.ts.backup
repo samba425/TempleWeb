@@ -1,0 +1,266 @@
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ContentService, TempleContent } from '../../services/content.service';
+
+@Component({
+  selector: 'app-manage-content',
+  templateUrl: './manage-content.component.html',
+  styleUrls: ['./manage-content.component.scss']
+})
+export class ManageContentComponent implements OnInit {
+  contentForm: FormGroup;
+  isLoading = false;
+  isSaving = false;
+  activeSection: number = 0;
+
+  sections = [
+    { id: 'hero', name: 'Hero Section', icon: 'home' },
+    { id: 'about', name: 'About Temple', icon: 'info' },
+    { id: 'services', name: 'Services', icon: 'room_service' },
+    { id: 'contact', name: 'Contact Info', icon: 'contact_mail' },
+    { id: 'events', name: 'Events', icon: 'event' },
+    { id: 'features', name: 'Features', icon: 'star' }
+  ];
+
+  constructor(
+    private fb: FormBuilder,
+    private contentService: ContentService,
+    private snackBar: MatSnackBar
+  ) {
+    this.contentForm = this.createForm();
+  }
+
+  async ngOnInit() {
+    await this.loadContent();
+  }
+
+  createForm(): FormGroup {
+    return this.fb.group({
+      hero: this.fb.group({
+        title: ['', Validators.required],
+        teluguText: [''],
+        subtitle: [''],
+        location: [''],
+        carouselImages: this.fb.array([])
+      }),
+      about: this.fb.group({
+        title: [''],
+        sections: this.fb.array([])
+      }),
+      services: this.fb.group({
+        services: this.fb.array([])
+      }),
+      contact: this.fb.group({
+        templeName: [''],
+        address: [''],
+        phone: [''],
+        email: ['', Validators.email],
+        timings: this.fb.group({
+          morning: [''],
+          evening: ['']
+        })
+      }),
+      events: this.fb.group({
+        events: this.fb.array([])
+      }),
+      features: this.fb.group({
+        features: this.fb.array([])
+      })
+    });
+  }
+
+  async loadContent() {
+    this.isLoading = true;
+    try {
+      const content = await this.contentService.getContent();
+      this.populateForm(content);
+      this.snackBar.open('Content loaded successfully', 'Close', { duration: 3000 });
+    } catch (error) {
+      console.error('Error loading content:', error);
+      this.snackBar.open('Error loading content', 'Close', { duration: 3000 });
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  populateForm(content: TempleContent) {
+    // Hero Section
+    this.contentForm.patchValue({
+      hero: {
+        title: content.hero.title,
+        teluguText: content.hero.teluguText,
+        subtitle: content.hero.subtitle,
+        location: content.hero.location
+      },
+      about: {
+        title: content.about.title
+      },
+      contact: content.contact
+    });
+
+    // Carousel Images
+    const carouselArray = this.contentForm.get('hero.carouselImages') as FormArray;
+    carouselArray.clear();
+    content.hero.carouselImages.forEach(img => {
+      carouselArray.push(this.fb.control(img));
+    });
+
+    // About Sections
+    const aboutArray = this.contentForm.get('about.sections') as FormArray;
+    aboutArray.clear();
+    content.about.sections.forEach(section => {
+      aboutArray.push(this.fb.group({
+        heading: [section.heading],
+        content: [section.content]
+      }));
+    });
+
+    // Services
+    const servicesArray = this.contentForm.get('services.services') as FormArray;
+    servicesArray.clear();
+    content.services.forEach(service => {
+      servicesArray.push(this.fb.group({
+        name: [service.name],
+        description: [service.description],
+        price: [service.price],
+        icon: [service.icon]
+      }));
+    });
+
+    // Events
+    const eventsArray = this.contentForm.get('events.events') as FormArray;
+    eventsArray.clear();
+    content.events.forEach(event => {
+      eventsArray.push(this.fb.group({
+        name: [event.name],
+        date: [event.date],
+        description: [event.description],
+        icon: [event.icon],
+        startDate: [event.startDate || ''],
+        endDate: [event.endDate || '']
+      }));
+    });
+
+    // Features
+    const featuresArray = this.contentForm.get('features.features') as FormArray;
+    featuresArray.clear();
+    content.features.forEach(feature => {
+      featuresArray.push(this.fb.group({
+        icon: [feature.icon],
+        title: [feature.title],
+        description: [feature.description]
+      }));
+    });
+  }
+
+  async saveContent() {
+    if (this.contentForm.invalid) {
+      this.snackBar.open('Please fill all required fields', 'Close', { duration: 3000 });
+      return;
+    }
+
+    this.isSaving = true;
+    try {
+      const formValue = this.contentForm.value;
+      const content: TempleContent = {
+        hero: formValue.hero,
+        about: formValue.about,
+        services: formValue.services.services,
+        contact: formValue.contact,
+        events: formValue.events.events,
+        features: formValue.features.features
+      };
+      await this.contentService.saveContent(content);
+      this.snackBar.open('✅ Content saved! Changes will appear on the website.', 'Close', { 
+        duration: 5000
+      });
+    } catch (error) {
+      console.error('Error saving content:', error);
+      this.snackBar.open('Error saving content', 'Close', { duration: 3000 });
+    } finally {
+      this.isSaving = false;
+    }
+  }
+
+  // FormArray getters
+  get carouselImages(): FormArray {
+    return this.contentForm.get('hero.carouselImages') as FormArray;
+  }
+
+  get aboutSections(): FormArray {
+    return this.contentForm.get('about.sections') as FormArray;
+  }
+
+  get services(): FormArray {
+    return this.contentForm.get('services.services') as FormArray;
+  }
+
+  get events(): FormArray {
+    return this.contentForm.get('events.events') as FormArray;
+  }
+
+  get features(): FormArray {
+    return this.contentForm.get('features.features') as FormArray;
+  }
+
+  // Add/Remove methods
+  addCarouselImage() {
+    this.carouselImages.push(this.fb.control(''));
+  }
+
+  removeCarouselImage(index: number) {
+    this.carouselImages.removeAt(index);
+  }
+
+  addAboutSection() {
+    this.aboutSections.push(this.fb.group({
+      heading: [''],
+      content: ['']
+    }));
+  }
+
+  removeAboutSection(index: number) {
+    this.aboutSections.removeAt(index);
+  }
+
+  addService() {
+    this.services.push(this.fb.group({
+      name: [''],
+      description: [''],
+      price: [''],
+      icon: ['']
+    }));
+  }
+
+  removeService(index: number) {
+    this.services.removeAt(index);
+  }
+
+  addEvent() {
+    this.events.push(this.fb.group({
+      name: [''],
+      date: [''],
+      description: [''],
+      icon: [''],
+      startDate: [''],
+      endDate: ['']
+    }));
+  }
+
+  removeEvent(index: number) {
+    this.events.removeAt(index);
+  }
+
+  addFeature() {
+    this.features.push(this.fb.group({
+      icon: [''],
+      title: [''],
+      description: ['']
+    }));
+  }
+
+  removeFeature(index: number) {
+    this.features.removeAt(index);
+  }
+}

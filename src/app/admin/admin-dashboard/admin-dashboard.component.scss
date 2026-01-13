@@ -31,15 +31,57 @@
 
     mat-list-item {
       cursor: pointer;
-      color: #ccc;
+      color: #e0e0e0;
       margin: 0.5rem 0;
       border-radius: 5px;
+      transition: all 0.3s ease;
+
+      .mat-list-item-content {
+        color: #e0e0e0 !important;
+      }
+
+      mat-icon {
+        color: #999;
+        margin-right: 1rem;
+      }
+
+      span {
+        color: #e0e0e0;
+        font-size: 1rem;
+      }
+
+      &.home-link {
+        background: linear-gradient(135deg, #d4651a 0%, #c43b00 100%);
+        color: #fff;
+        margin-bottom: 1rem;
+
+        .mat-list-item-content {
+          color: #fff !important;
+        }
+
+        mat-icon, span {
+          color: #fff;
+        }
+
+        &:hover {
+          background: linear-gradient(135deg, #e67525 0%, #d44b10 100%);
+          transform: translateX(5px);
+        }
+      }
 
       &:hover, &.active {
-        background: rgba(255, 107, 53, 0.1);
+        background: rgba(255, 107, 53, 0.2);
         color: #ff6b35;
 
+        .mat-list-item-content {
+          color: #ff6b35 !important;
+        }
+
         mat-icon {
+          color: #ff6b35;
+        }
+
+        span {
           color: #ff6b35;
         }
       }

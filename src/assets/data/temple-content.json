@@ -5,9 +5,9 @@
     "subtitle": "Swamiye Saranam Ayyappa",
     "location": "Pendurthi, Visakhapatnam, Andhra Pradesh",
     "carouselImages": [
-      "assets/images/480614142_1340522376959783_2104656479553551940_n.jpg",
-      "assets/images/486472084_1196186785851212_8874622736568729395_n.jpg",
-      "assets/images/474645972_1102912134661594_7088183194580120380_n.jpg"
+      "assets/images/1.jpg",
+      "assets/images/2.jpg",
+      "assets/images/3.jpg"
     ]
   },
   "about": {
@@ -71,40 +71,63 @@
   ],
   "gallery": [
     {
-      "url": "assets/images/480614142_1340522376959783_2104656479553551940_n.jpg",
+      "url": "assets/images/1.jpg",
       "title": "Temple Main View",
       "description": "Front view of the temple"
     },
     {
-      "url": "assets/images/486472084_1196186785851212_8874622736568729395_n.jpg",
+      "url": "assets/images/2.jpg",
       "title": "Temple Deity",
       "description": "Lord Ayyappa idol"
     },
     {
-      "url": "assets/images/474645972_1102912134661594_7088183194580120380_n.jpg",
+      "url": "assets/images/3.jpg",
       "title": "Temple Premises",
       "description": "Temple compound area"
     },
     {
-      "url": "assets/images/480973372_1170906191712605_3515341891943046139_n (1).jpg",
+      "url": "assets/images/4.jpg",
       "title": "Festival Celebration",
       "description": "Special festival event"
     },
     {
-      "url": "assets/images/43178806_2226317190966115_7484369083266236416_n.jpg",
+      "url": "assets/images/5.jpg",
       "title": "Temple Evening View",
       "description": "Temple illuminated at night"
     }
   ],
   "contact": {
     "templeName": "UTTHARANDHRA SABARIMALA",
-    "address": "Pendurthi, Visakhapatnam, Andhra Pradesh",
-    "phone": "+91 1234567890",
-    "email": "info@uttharandhrasabarimala.org",
+    "address": "Aditya Nagar, Pendurthi, Visakhapatnam, Andhra Pradesh 531173",
+    "phone": "+91 99999 99999",
+    "email": "info@ayyappasevatrust.org",
+    "website": "ayyappasevatrust.org",
     "timings": {
       "morning": "5:00 AM - 12:00 PM",
-      "evening": "4:00 PM - 9:00 PM"
+      "evening": "5:00 PM - 9:00 PM"
     }
+  },
+  "footer": {
+    "description": "Dedicated to Lord Ayyappa, spreading divine blessings and spiritual enlightenment in Visakhapatnam.",
+    "socialLinks": {
+      "facebook": "https://facebook.com/uttharandhratemple",
+      "twitter": "https://twitter.com/uttharandhratemple",
+      "instagram": "https://instagram.com/uttharandhratemple",
+      "youtube": "https://youtube.com/@uttharandhratemple"
+    },
+    "quickLinks": [
+      { "label": "About Temple", "route": "/about" },
+      { "label": "Services & Rituals", "route": "/services" },
+      { "label": "Photo Gallery", "route": "/gallery" },
+      { "label": "Make Donation", "route": "/donations" }
+    ],
+    "additionalInfo": "Special Poojas on Saturdays | Mandala Season: Nov - Jan",
+    "sponsors": [
+      {
+        "name": "Samba Siva Rao",
+        "role": "Developer"
+      }
+    ]
   },
   "events": [
     {

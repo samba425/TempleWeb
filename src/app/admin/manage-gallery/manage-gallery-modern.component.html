@@ -1,0 +1,144 @@
+<div class="manage-gallery">
+  <!-- Modern Upload Section with Two Columns -->
+  <mat-card class="upload-card" elevation="2">
+    <div class="upload-header">
+      <h2><mat-icon>add_photo_alternate</mat-icon> Upload New Image</h2>
+    </div>
+    
+    <form [formGroup]="uploadForm" (ngSubmit)="uploadImage()">
+      <div class="upload-layout">
+        <!-- LEFT: Drag & Drop Upload Zone -->
+        <div class="upload-left">
+          <div class="upload-zone" 
+               (dragover)="onDragOver($event)"
+               (dragleave)="onDragLeave($event)"
+               (drop)="onDrop($event)"
+               [class.drag-over]="isDragging"
+               (click)="fileInput.click()">
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" #fileInput hidden>
+            
+            <div *ngIf="!imagePreview" class="upload-placeholder">
+              <mat-icon class="upload-icon">cloud_upload</mat-icon>
+              <p class="upload-text">Drop image here</p>
+              <p class="upload-subtext">or click to browse</p>
+              <span class="file-types">PNG, JPG up to 10MB</span>
+            </div>
+            
+            <div *ngIf="imagePreview" class="image-preview">
+              <img [src]="imagePreview" alt="Preview">
+              <button mat-mini-fab color="warn" type="button" class="remove-btn" (click)="removeImage($event)">
+                <mat-icon>close</mat-icon>
+              </button>
+              <div class="file-info">
+                <mat-icon>image</mat-icon>
+                <span class="file-name">{{ selectedFile?.name }}</span>
+                <span class="file-size">{{ getFileSize() }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Form Fields -->
+        <div class="upload-right">
+          <div class="form-fields">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Image Title</mat-label>
+              <input matInput formControlName="title" placeholder="Enter title">
+              <mat-icon matPrefix>title</mat-icon>
+              <mat-error *ngIf="uploadForm.get('title')?.hasError('required')">
+                Title is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Description</mat-label>
+              <textarea matInput formControlName="description" rows="2" placeholder="Add details"></textarea>
+              <mat-icon matPrefix>description</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Category</mat-label>
+              <mat-select formControlName="category">
+                <mat-option value="General">General</mat-option>
+                <mat-option value="Festivals">Festivals</mat-option>
+                <mat-option value="Daily-pooja">Daily Pooja</mat-option>
+                <mat-option value="Special-events">Special Events</mat-option>
+                <mat-option value="Temple">Temple</mat-option>
+              </mat-select>
+              <mat-icon matPrefix>category</mat-icon>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" type="submit" 
+                    class="upload-btn"
+                    [disabled]="!selectedFile || uploadForm.invalid || isUploading">
+              <mat-icon>{{ isUploading ? 'hourglass_empty' : 'upload' }}</mat-icon>
+              {{ isUploading ? 'Uploading...' : 'Upload Image' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </mat-card>
+
+  <!-- Gallery Header with Stats -->
+  <div class="gallery-header">
+    <div class="stats">
+      <h2><mat-icon>photo_library</mat-icon> Gallery Images</h2>
+      <span class="image-count">{{ filteredImages.length }} images</span>
+    </div>
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search</mat-label>
+      <input matInput [(ngModel)]="searchQuery" [ngModelOptions]="{standalone: true}" (ngModelChange)="filterImages()" placeholder="Type to search...">
+      <mat-icon matPrefix>search</mat-icon>
+      <button mat-icon-button matSuffix *ngIf="searchQuery" (click)="searchQuery=''; filterImages()" aria-label="Clear">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <!-- Gallery Grid -->
+  <div class="gallery-grid" *ngIf="paginatedImages.length > 0 && !isLoading">
+    <mat-card *ngFor="let image of paginatedImages" class="gallery-item" elevation="3">
+      <div class="image-container">
+        <img [src]="image.imageUrl" [alt]="image.title" loading="lazy">
+        <div class="image-overlay">
+          <button mat-mini-fab color="warn" (click)="deleteImage(image)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="image-details">
+        <h3>{{ image.title }}</h3>
+        <p class="description">{{ image.description || 'No description' }}</p>
+        <div class="meta">
+          <mat-chip class="category-chip">{{ image.category }}</mat-chip>
+          <span class="date" *ngIf="image.uploadedAt">{{ getImageDate(image.uploadedAt) | date:'MMM d, y' }}</span>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="paginatedImages.length === 0 && !isLoading">
+    <mat-icon>photo_library</mat-icon>
+    <h3>No images yet</h3>
+    <p>Upload your first image to get started</p>
+  </div>
+
+  <!-- Pagination -->
+  <mat-paginator *ngIf="filteredImages.length > 0"
+    [length]="filteredImages.length"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="[6, 12, 24, 48]"
+    (page)="onPageChange($event)"
+    showFirstLastButtons
+    class="paginator">
+  </mat-paginator>
+
+  <!-- Loading Spinner -->
+  <div class="loading" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading images...</p>
+  </div>
+</div>

@@ -11,8 +11,11 @@ export class AuthGuard implements CanActivate {
     private router: Router
   ) {}
 
-  canActivate(): boolean {
-    if (this.authService.isLoggedIn()) {
+  async canActivate(): Promise<boolean> {
+    // Wait for Firebase auth to initialize
+    const user = await this.authService.waitForAuth();
+    
+    if (user) {
       return true;
     }
     

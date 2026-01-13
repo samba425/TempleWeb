@@ -1,0 +1,309 @@
+<div class="manage-content">
+  <!-- Header with Save Button -->
+  <div class="content-header">
+    <div>
+      <h1><mat-icon>edit_note</mat-icon> Manage Temple Content</h1>
+      <p class="subtitle">Edit website content and save changes to Firebase</p>
+    </div>
+    <button mat-raised-button color="primary" class="save-btn" 
+            (click)="saveContent()" [disabled]="isSaving || contentForm.invalid">
+      <mat-icon>{{ isSaving ? 'hourglass_empty' : 'save' }}</mat-icon>
+      {{ isSaving ? 'Saving...' : 'Save All Changes' }}
+    </button>
+  </div>
+
+  <!-- Section Tabs -->
+  <mat-tab-group [(selectedIndex)]="activeSection" dynamicHeight class="content-tabs">
+    <!-- HERO SECTION -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>home</mat-icon> Hero
+      </ng-template>
+      <div class="tab-content">
+        <mat-card [formGroup]="$any(contentForm.get('hero'))">
+          <h2>Hero Section</h2>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Temple Title</mat-label>
+            <input matInput formControlName="title">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Telugu Text</mat-label>
+            <input matInput formControlName="teluguText">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Subtitle</mat-label>
+            <input matInput formControlName="subtitle">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Location</mat-label>
+            <input matInput formControlName="location">
+          </mat-form-field>
+
+          <div class="array-section">
+            <h3>Carousel Images 
+              <button mat-icon-button color="primary" (click)="addCarouselImage()" type="button">
+                <mat-icon>add_circle</mat-icon>
+              </button>
+            </h3>
+            <div formArrayName="carouselImages">
+              <div *ngFor="let img of carouselImages.controls; let i = index" class="array-item">
+                <mat-form-field appearance="outline" class="flex-1">
+                  <mat-label>Image URL {{ i + 1 }}</mat-label>
+                  <input matInput [formControlName]="i">
+                </mat-form-field>
+                <button mat-icon-button color="warn" (click)="removeCarouselImage(i)" type="button">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- ABOUT SECTION -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>info</mat-icon> About
+      </ng-template>
+      <div class="tab-content">
+        <mat-card [formGroup]="$any(contentForm.get('about'))">
+          <h2>About Temple</h2>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Section Title</mat-label>
+            <input matInput formControlName="title">
+          </mat-form-field>
+
+          <div class="array-section">
+            <h3>Content Sections
+              <button mat-icon-button color="primary" (click)="addAboutSection()" type="button">
+                <mat-icon>add_circle</mat-icon>
+              </button>
+            </h3>
+            <div formArrayName="sections">
+              <mat-card *ngFor="let section of aboutSections.controls; let i = index" 
+                        [formGroupName]="i" class="nested-card">
+                <div class="card-header">
+                  <h4>Section {{ i + 1 }}</h4>
+                  <button mat-icon-button color="warn" (click)="removeAboutSection(i)" type="button">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Heading</mat-label>
+                  <input matInput formControlName="heading">
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Content</mat-label>
+                  <textarea matInput formControlName="content" rows="4"></textarea>
+                </mat-form-field>
+              </mat-card>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- SERVICES SECTION -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>room_service</mat-icon> Services
+      </ng-template>
+      <div class="tab-content">
+        <mat-card [formGroup]="$any(contentForm.get('services'))">
+          <div class="card-header">
+            <h2>Temple Services</h2>
+            <button mat-raised-button color="primary" (click)="addService()" type="button">
+              <mat-icon>add</mat-icon> Add Service
+            </button>
+          </div>
+
+          <div formArrayName="services">
+            <mat-card *ngFor="let service of services.controls; let i = index" 
+                      [formGroupName]="i" class="nested-card">
+              <div class="card-header">
+                <h4>Service {{ i + 1 }}</h4>
+                <button mat-icon-button color="warn" (click)="removeService(i)" type="button">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+              <div class="grid-2">
+                <mat-form-field appearance="outline">
+                  <mat-label>Service Name</mat-label>
+                  <input matInput formControlName="name">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Price</mat-label>
+                  <input matInput formControlName="price">
+                </mat-form-field>
+              </div>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Description</mat-label>
+                <textarea matInput formControlName="description" rows="2"></textarea>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Icon (Material Icon Name)</mat-label>
+                <input matInput formControlName="icon">
+              </mat-form-field>
+            </mat-card>
+          </div>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- CONTACT SECTION -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>contact_mail</mat-icon> Contact
+      </ng-template>
+      <div class="tab-content">
+        <mat-card [formGroup]="$any(contentForm.get('contact'))">
+          <h2>Contact Information</h2>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Temple Name</mat-label>
+            <input matInput formControlName="templeName">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Address</mat-label>
+            <textarea matInput formControlName="address" rows="2"></textarea>
+          </mat-form-field>
+
+          <div class="grid-2">
+            <mat-form-field appearance="outline">
+              <mat-label>Phone</mat-label>
+              <input matInput formControlName="phone">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" type="email">
+            </mat-form-field>
+          </div>
+
+          <div formGroupName="timings">
+            <h3>Temple Timings</h3>
+            <div class="grid-2">
+              <mat-form-field appearance="outline">
+                <mat-label>Morning</mat-label>
+                <input matInput formControlName="morning">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Evening</mat-label>
+                <input matInput formControlName="evening">
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- EVENTS SECTION -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>event</mat-icon> Events
+      </ng-template>
+      <div class="tab-content">
+        <mat-card [formGroup]="$any(contentForm.get('events'))">
+          <div class="card-header">
+            <h2>Temple Events</h2>
+            <button mat-raised-button color="primary" (click)="addEvent()" type="button">
+              <mat-icon>add</mat-icon> Add Event
+            </button>
+          </div>
+
+          <div formArrayName="events">
+            <mat-card *ngFor="let event of events.controls; let i = index" 
+                      [formGroupName]="i" class="nested-card">
+              <div class="card-header">
+                <h4>Event {{ i + 1 }}</h4>
+                <button mat-icon-button color="warn" (click)="removeEvent(i)" type="button">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+              <div class="grid-2">
+                <mat-form-field appearance="outline">
+                  <mat-label>Event Name</mat-label>
+                  <input matInput formControlName="name">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Display Date</mat-label>
+                  <input matInput formControlName="date" placeholder="e.g., 14 Jan">
+                </mat-form-field>
+              </div>
+              <div class="grid-2">
+                <mat-form-field appearance="outline">
+                  <mat-label>Start Date</mat-label>
+                  <input matInput type="date" formControlName="startDate">
+                  <mat-hint>Event becomes visible from this date</mat-hint>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>End Date</mat-label>
+                  <input matInput type="date" formControlName="endDate">
+                  <mat-hint>Auto-removed 2 days after this date</mat-hint>
+                </mat-form-field>
+              </div>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Description</mat-label>
+                <textarea matInput formControlName="description" rows="2"></textarea>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Icon (Material Icon Name)</mat-label>
+                <input matInput formControlName="icon">
+              </mat-form-field>
+            </mat-card>
+          </div>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- FEATURES SECTION -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>star</mat-icon> Features
+      </ng-template>
+      <div class="tab-content">
+        <mat-card [formGroup]="$any(contentForm.get('features'))">
+          <div class="card-header">
+            <h2>Website Features</h2>
+            <button mat-raised-button color="primary" (click)="addFeature()" type="button">
+              <mat-icon>add</mat-icon> Add Feature
+            </button>
+          </div>
+
+          <div formArrayName="features">
+            <mat-card *ngFor="let feature of features.controls; let i = index" 
+                      [formGroupName]="i" class="nested-card">
+              <div class="card-header">
+                <h4>Feature {{ i + 1 }}</h4>
+                <button mat-icon-button color="warn" (click)="removeFeature(i)" type="button">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Title</mat-label>
+                <input matInput formControlName="title">
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Description</mat-label>
+                <textarea matInput formControlName="description" rows="2"></textarea>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Icon (Material Icon Name)</mat-label>
+                <input matInput formControlName="icon">
+              </mat-form-field>
+            </mat-card>
+          </div>
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading content...</p>
+  </div>
+</div>

@@ -25,6 +25,12 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -44,7 +50,9 @@ import { FooterComponent } from './components/footer/footer.component';
 import { AdminLoginComponent } from './admin/admin-login/admin-login.component';
 import { AdminDashboardComponent } from './admin/admin-dashboard/admin-dashboard.component';
 import { ManageContentComponent } from './admin/manage-content/manage-content.component';
+import { ManageAnnouncementsComponent } from './admin/manage-announcements/manage-announcements.component';
 import { ManageGalleryComponent } from './admin/manage-gallery/manage-gallery.component';
+import { ManageGalleryModernComponent } from './admin/manage-gallery/manage-gallery-modern.component';
 import { DonationHistoryComponent } from './admin/donation-history/donation-history.component';
 
 // Pipes
@@ -64,7 +72,9 @@ import { SafePipe } from './pipes/safe.pipe';
     AdminLoginComponent,
     AdminDashboardComponent,
     ManageContentComponent,
+    ManageAnnouncementsComponent,
     ManageGalleryComponent,
+    ManageGalleryModernComponent,
     DonationHistoryComponent,
     SafePipe
   ],
@@ -88,7 +98,13 @@ import { SafePipe } from './pipes/safe.pipe';
     MatSidenavModule,
     MatListModule,
     MatMenuModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatPaginatorModule,
+    MatChipsModule,
+    MatSelectModule,
+    MatTabsModule,
+    MatSlideToggleModule,
+    MatTooltipModule
   ],
   providers: [
     provideFirebaseApp(() => initializeApp(environment.firebase)),

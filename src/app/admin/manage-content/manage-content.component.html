@@ -1,0 +1,613 @@
+<div class="manage-content">
+  <!-- Header -->
+  <div class="content-header">
+    <div>
+      <h1><mat-icon>dashboard</mat-icon> Manage Temple Content</h1>
+      <p class="subtitle">Update hero, services, events, and temple information</p>
+    </div>
+    <div>
+      <button mat-raised-button color="accent" (click)="initializeFirebase()" [disabled]="isInitializing">
+        <mat-icon>cloud_upload</mat-icon>
+        {{ isInitializing ? 'Initializing...' : 'Initialize Firebase from JSON' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <mat-spinner></mat-spinner>
+    <p>Loading content...</p>
+  </div>
+
+  <!-- Tabs -->
+  <mat-tab-group *ngIf="!isLoading" [(selectedIndex)]="activeTab" class="content-tabs">
+    
+    <!-- Hero Section Tab -->
+    <mat-tab label="Hero Section">
+      <div class="tab-content">
+        <div class="section-header">
+          <h2><mat-icon>home</mat-icon> Hero Section</h2>
+          <button mat-raised-button color="primary" (click)="openHeroModal()">
+            <mat-icon>edit</mat-icon> Edit Hero
+          </button>
+        </div>
+        <div class="info-card" *ngIf="content">
+          <div class="info-row">
+            <span class="label">Title:</span>
+            <span class="value">{{ content.hero.title }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Telugu Text:</span>
+            <span class="value">{{ content.hero.teluguText }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Subtitle:</span>
+            <span class="value">{{ content.hero.subtitle }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Location:</span>
+            <span class="value">{{ content.hero.location }}</span>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Services Tab -->
+    <mat-tab label="Services">
+      <div class="tab-content">
+        <div class="section-header">
+          <h2><mat-icon>room_service</mat-icon> Temple Services</h2>
+          <button mat-raised-button color="primary" (click)="openCreateModal('service')">
+            <mat-icon>add</mat-icon> Add Service
+          </button>
+        </div>
+
+        <table mat-table [dataSource]="services" class="content-table">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Service Name</th>
+            <td mat-cell *matCellDef="let service">
+              <div class="service-cell">
+                <mat-icon>{{ service.icon }}</mat-icon>
+                <div>
+                  <strong>{{ service.name }}</strong>
+                  <p>{{ service.description | slice:0:60 }}{{ service.description.length > 60 ? '...' : '' }}</p>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="price">
+            <th mat-header-cell *matHeaderCellDef>Price</th>
+            <td mat-cell *matCellDef="let service">
+              <span class="price-badge">{{ service.price }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let service; let i = index">
+              <button mat-icon-button color="primary" (click)="openEditModal('service', i)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteItem('service', i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsServices"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsServices;"></tr>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- Events Tab -->
+    <mat-tab label="Events">
+      <div class="tab-content">
+        <div class="section-header">
+          <h2><mat-icon>event</mat-icon> Temple Events</h2>
+          <button mat-raised-button color="primary" (click)="openCreateModal('event')">
+            <mat-icon>add</mat-icon> Add Event
+          </button>
+        </div>
+
+        <table mat-table [dataSource]="events" class="content-table">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Event Name</th>
+            <td mat-cell *matCellDef="let event">
+              <div class="service-cell">
+                <mat-icon>{{ event.icon }}</mat-icon>
+                <div>
+                  <strong>{{ event.name }}</strong>
+                  <p>{{ event.description | slice:0:60 }}{{ event.description.length > 60 ? '...' : '' }}</p>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <td mat-cell *matCellDef="let event">
+              <div class="date-cell">
+                <mat-icon>event</mat-icon>
+                <span>{{ event.date }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let event; let i = index">
+              <button mat-icon-button color="primary" (click)="openEditModal('event', i)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteItem('event', i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsEvents"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsEvents;"></tr>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- Features Tab -->
+    <mat-tab label="Features">
+      <div class="tab-content">
+        <div class="section-header">
+          <h2><mat-icon>star</mat-icon> Temple Features</h2>
+          <button mat-raised-button color="primary" (click)="openCreateModal('feature')">
+            <mat-icon>add</mat-icon> Add Feature
+          </button>
+        </div>
+
+        <table mat-table [dataSource]="features" class="content-table">
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef>Feature</th>
+            <td mat-cell *matCellDef="let feature">
+              <div class="service-cell">
+                <mat-icon>{{ feature.icon }}</mat-icon>
+                <div>
+                  <strong>{{ feature.title }}</strong>
+                  <p>{{ feature.description | slice:0:80 }}{{ feature.description.length > 80 ? '...' : '' }}</p>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let feature; let i = index">
+              <button mat-icon-button color="primary" (click)="openEditModal('feature', i)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteItem('feature', i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsFeatures"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsFeatures;"></tr>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- Contact Info Tab -->
+    <mat-tab label="Contact Info">
+      <div class="tab-content">
+        <div class="section-header">
+          <h2><mat-icon>contact_mail</mat-icon> Contact Information</h2>
+          <button mat-raised-button color="primary" (click)="openContactModal()">
+            <mat-icon>edit</mat-icon> Edit Contact
+          </button>
+        </div>
+        <div class="info-card" *ngIf="content">
+          <div class="info-row">
+            <span class="label">Temple Name:</span>
+            <span class="value">{{ content.contact.templeName }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Address:</span>
+            <span class="value">{{ content.contact.address }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Phone:</span>
+            <span class="value">{{ content.contact.phone }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Email:</span>
+            <span class="value">{{ content.contact.email }}</span>
+          </div>
+          <div class="info-row" *ngIf="content.contact.website">
+            <span class="label">Website:</span>
+            <span class="value">{{ content.contact.website }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Morning Timings:</span>
+            <span class="value">{{ content.contact.timings.morning }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Evening Timings:</span>
+            <span class="value">{{ content.contact.timings.evening }}</span>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Footer Tab -->
+    <mat-tab label="Footer">
+      <div class="tab-content">
+        <div class="section-header">
+          <h2><mat-icon>web</mat-icon> Footer Settings</h2>
+          <button mat-raised-button color="primary" (click)="openFooterModal()">
+            <mat-icon>edit</mat-icon> Edit Footer
+          </button>
+        </div>
+        <div class="info-card" *ngIf="content">
+          <div class="info-row">
+            <span class="label">Description:</span>
+            <span class="value">{{ content.footer?.description || 'Not set' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Facebook:</span>
+            <span class="value">{{ content.footer?.socialLinks?.facebook || 'Not set' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Twitter:</span>
+            <span class="value">{{ content.footer?.socialLinks?.twitter || 'Not set' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Instagram:</span>
+            <span class="value">{{ content.footer?.socialLinks?.instagram || 'Not set' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">YouTube:</span>
+            <span class="value">{{ content.footer?.socialLinks?.youtube || 'Not set' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Additional Info:</span>
+            <span class="value">{{ content.footer?.additionalInfo || 'Not set' }}</span>
+          </div>
+        </div>
+
+        <!-- Quick Links Section -->
+        <div class="section-header" style="margin-top: 2rem;">
+          <h2><mat-icon>link</mat-icon> Quick Links</h2>
+          <button mat-raised-button color="primary" (click)="openCreateModal('quicklink')">
+            <mat-icon>add</mat-icon> Add Link
+          </button>
+        </div>
+
+        <table mat-table [dataSource]="quickLinks" class="content-table" *ngIf="quickLinks.length > 0">
+          <ng-container matColumnDef="label">
+            <th mat-header-cell *matHeaderCellDef>Label</th>
+            <td mat-cell *matCellDef="let link">
+              <strong>{{ link.label }}</strong>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="route">
+            <th mat-header-cell *matHeaderCellDef>Route</th>
+            <td mat-cell *matCellDef="let link">
+              {{ link.route }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let link; let i = index">
+              <button mat-icon-button color="primary" (click)="openEditModal('quicklink', i)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteItem('quicklink', i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsQuickLinks"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsQuickLinks;"></tr>
+        </table>
+
+        <div class="empty-state" *ngIf="quickLinks.length === 0">
+          <mat-icon>link_off</mat-icon>
+          <p>No quick links added yet</p>
+          <p class="hint">Click "Add Link" to add footer navigation links</p>
+        </div>
+
+        <!-- Sponsors Section -->
+        <div class="section-header" style="margin-top: 2rem;">
+          <h2><mat-icon>people</mat-icon> Sponsors</h2>
+          <button mat-raised-button color="primary" (click)="openCreateModal('sponsor')">
+            <mat-icon>add</mat-icon> Add Sponsor
+          </button>
+        </div>
+
+        <table mat-table [dataSource]="sponsors" class="content-table" *ngIf="sponsors.length > 0">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Sponsor Name</th>
+            <td mat-cell *matCellDef="let sponsor">
+              <strong>{{ sponsor.name }}</strong>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>Role</th>
+            <td mat-cell *matCellDef="let sponsor">
+              {{ sponsor.role || 'Sponsor' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let sponsor; let i = index">
+              <button mat-icon-button color="primary" (click)="openEditModal('sponsor', i)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteItem('sponsor', i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsSponsors"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsSponsors;"></tr>
+        </table>
+
+        <div class="empty-state" *ngIf="sponsors.length === 0">
+          <mat-icon>people_outline</mat-icon>
+          <p>No sponsors added yet</p>
+          <p class="hint">Click "Add Sponsor" to add sponsor information</p>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>
+          <mat-icon>{{ editingIndex >= 0 ? 'edit' : 'add_circle' }}</mat-icon>
+          {{ editingIndex >= 0 ? 'Edit' : 'Add' }} {{ modalType | titlecase }}
+        </h2>
+        <button mat-icon-button (click)="closeModal()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="modal-body" [formGroup]="itemForm">
+        <!-- Service Form -->
+        <ng-container *ngIf="modalType === 'service'">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Service Name</mat-label>
+            <input matInput formControlName="name" placeholder="e.g., Special Pooja">
+            <mat-error>Service name is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="3"></textarea>
+            <mat-error>Description is required</mat-error>
+          </mat-form-field>
+
+          <div class="grid-2">
+            <mat-form-field appearance="outline">
+              <mat-label>Price</mat-label>
+              <input matInput formControlName="price" placeholder="e.g., ₹500">
+              <mat-error>Price is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Icon</mat-label>
+              <input matInput formControlName="icon" placeholder="e.g., temple_hindu">
+              <mat-error>Icon is required</mat-error>
+            </mat-form-field>
+          </div>
+        </ng-container>
+
+        <!-- Event Form -->
+        <ng-container *ngIf="modalType === 'event'">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Event Name</mat-label>
+            <input matInput formControlName="name" placeholder="e.g., Maha Shivaratri">
+            <mat-error>Event name is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="3"></textarea>
+            <mat-error>Description is required</mat-error>
+          </mat-form-field>
+
+          <div class="grid-2">
+            <mat-form-field appearance="outline">
+              <mat-label>Date</mat-label>
+              <input matInput formControlName="date" placeholder="e.g., March 8, 2024">
+              <mat-error>Date is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Icon</mat-label>
+              <input matInput formControlName="icon" placeholder="e.g., event">
+              <mat-error>Icon is required</mat-error>
+            </mat-form-field>
+          </div>
+        </ng-container>
+
+        <!-- Feature Form -->
+        <ng-container *ngIf="modalType === 'feature'">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Feature Title</mat-label>
+            <input matInput formControlName="title" placeholder="e.g., Daily Rituals">
+            <mat-error>Title is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="3"></textarea>
+            <mat-error>Description is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Icon</mat-label>
+            <input matInput formControlName="icon" placeholder="e.g., star">
+            <mat-error>Icon is required</mat-error>
+          </mat-form-field>
+        </ng-container>
+
+        <!-- Sponsor Form -->
+        <ng-container *ngIf="modalType === 'sponsor'">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Sponsor Name</mat-label>
+            <input matInput formControlName="name" placeholder="e.g., Samba Siva Rao">
+            <mat-error>Sponsor name is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Role (Optional)</mat-label>
+            <input matInput formControlName="role" placeholder="e.g., Developer, Donor, Technical Support">
+            <mat-hint>Leave empty for default "Sponsor" label</mat-hint>
+          </mat-form-field>
+        </ng-container>
+
+        <!-- Quick Link Form -->
+        <ng-container *ngIf="modalType === 'quicklink'">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Link Label</mat-label>
+            <input matInput formControlName="label" placeholder="e.g., About Temple">
+            <mat-error>Label is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Route</mat-label>
+            <input matInput formControlName="route" placeholder="e.g., /about">
+            <mat-error>Route is required</mat-error>
+            <mat-hint>Enter the route path (e.g., /about, /services, /gallery)</mat-hint>
+          </mat-form-field>
+        </ng-container>
+
+        <!-- Hero Form -->
+        <ng-container *ngIf="modalType === 'hero'">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Title</mat-label>
+            <input matInput formControlName="title">
+            <mat-error>Title is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Telugu Text</mat-label>
+            <input matInput formControlName="teluguText">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Subtitle</mat-label>
+            <input matInput formControlName="subtitle">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Location</mat-label>
+            <input matInput formControlName="location">
+          </mat-form-field>
+        </ng-container>
+
+        <!-- Contact Form -->
+        <ng-container *ngIf="modalType === 'contact'">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Temple Name</mat-label>
+            <input matInput formControlName="templeName">
+            <mat-error>Temple name is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Address</mat-label>
+            <textarea matInput formControlName="address" rows="2"></textarea>
+            <mat-error>Address is required</mat-error>
+          </mat-form-field>
+
+          <div class="grid-2">
+            <mat-form-field appearance="outline">
+              <mat-label>Phone</mat-label>
+              <input matInput formControlName="phone">
+              <mat-error>Phone is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" type="email">
+              <mat-error>Valid email is required</mat-error>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Website</mat-label>
+            <input matInput formControlName="website" placeholder="e.g., ayyappasevatrust.org">
+          </mat-form-field>
+
+          <div class="grid-2">
+            <mat-form-field appearance="outline">
+              <mat-label>Morning Timings</mat-label>
+              <input matInput formControlName="morningTimings" placeholder="e.g., 6:00 AM - 12:00 PM">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Evening Timings</mat-label>
+              <input matInput formControlName="eveningTimings" placeholder="e.g., 4:00 PM - 9:00 PM">
+            </mat-form-field>
+          </div>
+        </ng-container>
+
+        <!-- Footer Form -->
+        <ng-container *ngIf="modalType === 'footer'">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Footer Description</mat-label>
+            <textarea matInput formControlName="description" rows="3" placeholder="Temple description for footer"></textarea>
+            <mat-error>Description is required</mat-error>
+          </mat-form-field>
+
+          <h4 style="color: #d4651a; margin: 20px 0 10px 0;">Social Media Links</h4>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Facebook URL</mat-label>
+            <input matInput formControlName="facebook" placeholder="https://facebook.com/yourtemple">
+            <mat-icon matPrefix>facebook</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Twitter URL</mat-label>
+            <input matInput formControlName="twitter" placeholder="https://twitter.com/yourtemple">
+            <mat-icon matPrefix>share</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Instagram URL</mat-label>
+            <input matInput formControlName="instagram" placeholder="https://instagram.com/yourtemple">
+            <mat-icon matPrefix>photo_camera</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>YouTube URL</mat-label>
+            <input matInput formControlName="youtube" placeholder="https://youtube.com/@yourtemple">
+            <mat-icon matPrefix>play_circle</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Additional Information</mat-label>
+            <input matInput formControlName="additionalInfo" placeholder="e.g., Special Poojas on Saturdays | Mandala Season: Nov - Jan">
+          </mat-form-field>
+        </ng-container>
+      </div>
+
+      <div class="modal-footer">
+        <button mat-button (click)="closeModal()">Cancel</button>
+        <button mat-raised-button color="primary" (click)="saveItem()" [disabled]="isSaving || itemForm.invalid">
+          <mat-icon>{{ isSaving ? 'hourglass_empty' : 'save' }}</mat-icon>
+          {{ isSaving ? 'Saving...' : (editingIndex >= 0 ? 'Update' : 'Create') }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

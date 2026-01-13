@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { FirebaseService, GalleryImage } from '../../services/firebase.service';
+import { ContentService } from '../../services/content.service';
 
 interface GalleryData {
   url: string;
@@ -35,31 +35,44 @@ export class GalleryComponent implements OnInit {
 
   constructor(
     private firebaseService: FirebaseService,
-    private http: HttpClient
+    private contentService: ContentService
   ) {}
 
   async ngOnInit() {
-    // Load from JSON first (fallback)
-    this.loadFromJSON();
+    // Load from ContentService (Firebase first, then JSON fallback)
+    this.loadFromContentService();
     
-    // Try to load Firebase images in background
+    // Try to load Firebase gallery images in background
     try {
       this.images = await this.firebaseService.getGalleryImages();
-      if (this.images.length > 0) {
-        this.loadMoreImages();
-      }
+      // Merge both local and Firebase images
+      this.loadMoreImages();
     } catch (error) {
       console.error('Firebase not available, using JSON fallback:', error);
-      this.loadMoreImages(); // Load from local images
+      this.loadMoreImages(); // Load from local images only
     }
   }
   
   loadMoreImages() {
     this.isLoading = true;
     
-    const allImages = this.images.length > 0 
-      ? this.images 
-      : this.localImages.map(url => ({ url, title: 'Temple Image' }));
+    // Combine Firebase images and local images
+    const firebaseImages = this.images.map(img => ({
+      imageUrl: img.imageUrl,
+      title: img.title,
+      category: img.category,
+      isFirebase: true
+    }));
+    
+    const localImagesFormatted = this.localImages.map(url => ({
+      imageUrl: url,
+      title: 'Temple Image',
+      category: 'temple',
+      isFirebase: false
+    }));
+    
+    // Merge: Firebase images first, then local images
+    const allImages = [...firebaseImages, ...localImagesFormatted];
     
     const start = this.currentPage * this.imagesPerPage;
     const end = start + this.imagesPerPage;
@@ -76,39 +89,64 @@ export class GalleryComponent implements OnInit {
     this.currentPage = 0;
     this.displayedImages = [];
     
+    // Combine Firebase and local images
+    const firebaseImages = this.images.map(img => ({
+      imageUrl: img.imageUrl,
+      title: img.title,
+      category: img.category,
+      isFirebase: true
+    }));
+    
+    const localImagesFormatted = this.localImages.map(url => ({
+      imageUrl: url,
+      title: 'Temple Image',
+      category: 'temple',
+      isFirebase: false
+    }));
+    
+    const allImages = [...firebaseImages, ...localImagesFormatted];
+    
+    let imagesToDisplay;
+    
     if (category === 'all') {
-      this.loadMoreImages();
+      imagesToDisplay = allImages;
     } else {
-      // Filter images by category
-      const filtered = this.images.filter(img => img.category === category);
-      this.displayedImages = filtered.slice(0, this.imagesPerPage);
-      this.hasMore = filtered.length > this.imagesPerPage;
+      // Filter by category
+      imagesToDisplay = allImages.filter(img => img.category?.toLowerCase() === category.toLowerCase());
+    }
+    
+    const end = Math.min(this.imagesPerPage, imagesToDisplay.length);
+    this.displayedImages = imagesToDisplay.slice(0, end);
+    this.hasMore = imagesToDisplay.length > this.imagesPerPage;
+  }
+  
+  private async loadFromContentService() {
+    try {
+      const data = await this.contentService.getContent();
+      if (data.gallery && Array.isArray(data.gallery)) {
+        this.localImages = data.gallery.map((item: GalleryData) => item.url);
+      } else {
+        this.localImages = this.getDefaultImages();
+      }
+    } catch (error) {
+      console.error('Error loading gallery from ContentService:', error);
+      this.localImages = this.getDefaultImages();
     }
   }
   
   private loadFromJSON() {
-    this.http.get<any>('assets/data/temple-content.json').subscribe({
-      next: (data) => {
-        if (data.gallery && Array.isArray(data.gallery)) {
-          this.localImages = data.gallery.map((item: GalleryData) => item.url);
-        } else {
-          this.localImages = this.getDefaultImages();
-        }
-      },
-      error: (err) => {
-        console.error('Error loading gallery from JSON:', err);
-        this.localImages = this.getDefaultImages();
-      }
-    });
+    // This method is now replaced by loadFromContentService
+    // Keeping for backward compatibility if needed
+    this.loadFromContentService();
   }
   
   private getDefaultImages(): string[] {
     return [
-      'assets/images/480614142_1340522376959783_2104656479553551940_n.jpg',
-      'assets/images/486472084_1196186785851212_8874622736568729395_n.jpg',
-      'assets/images/474645972_1102912134661594_7088183194580120380_n.jpg',
-      'assets/images/480973372_1170906191712605_3515341891943046139_n (1).jpg',
-      'assets/images/43178806_2226317190966115_7484369083266236416_n.jpg'
+      'assets/images/1.jpg',
+      'assets/images/2.jpg',
+      'assets/images/3.jpg',
+      'assets/images/4.jpg',
+      'assets/images/5.jpg'
     ];
   }
 
@@ -125,13 +163,21 @@ export class GalleryComponent implements OnInit {
   }
 
   nextImage() {
-    this.currentImageIndex = (this.currentImageIndex + 1) % this.localImages.length;
-    this.currentImage = this.localImages[this.currentImageIndex];
+    const allImages = this.getAllImageUrls();
+    this.currentImageIndex = (this.currentImageIndex + 1) % allImages.length;
+    this.currentImage = allImages[this.currentImageIndex];
   }
 
   previousImage() {
-    this.currentImageIndex = (this.currentImageIndex - 1 + this.localImages.length) % this.localImages.length;
-    this.currentImage = this.localImages[this.currentImageIndex];
+    const allImages = this.getAllImageUrls();
+    this.currentImageIndex = (this.currentImageIndex - 1 + allImages.length) % allImages.length;
+    this.currentImage = allImages[this.currentImageIndex];
+  }
+
+  private getAllImageUrls(): string[] {
+    // Combine both Firebase and local images for navigation
+    const firebaseUrls = this.images.map(img => img.imageUrl);
+    return [...firebaseUrls, ...this.localImages];
   }
 
   handleKeyPress(event: KeyboardEvent) {

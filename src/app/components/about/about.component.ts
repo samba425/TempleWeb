@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { ContentService } from '../../services/content.service';
 
 interface AboutSection {
   heading: string;
@@ -82,7 +82,7 @@ interface AboutContent {
             <div class="temple-location">
               <h3>Visit Us</h3>
               <p><mat-icon>location_on</mat-icon> Aditya Nagar, Pendurthi, Visakhapatnam, Andhra Pradesh 531173</p>
-              <p><mat-icon>phone</mat-icon> +91 94907 08933</p>
+              <p><mat-icon>phone</mat-icon> +91 99999 99999</p>
               <p><mat-icon>schedule</mat-icon> Opens 5:00 PM Daily</p>
             </div>
           </mat-card>
@@ -95,31 +95,28 @@ interface AboutContent {
 export class AboutComponent implements OnInit {
   aboutContent: AboutContent | null = null;
   
-  constructor(private http: HttpClient) {}
+  constructor(private contentService: ContentService) {}
   
   ngOnInit() {
     this.loadContent();
   }
   
-  private loadContent() {
-    // Try to load from Firebase first, fallback to JSON
-    this.http.get<any>('assets/data/temple-content.json').subscribe({
-      next: (data) => {
-        this.aboutContent = data.about;
-      },
-      error: (err) => {
-        console.error('Error loading content:', err);
-        // Fallback to hardcoded data
-        this.aboutContent = {
-          title: 'Lord Ayyappa - Dharma Sastha',
-          sections: [
-            {
-              heading: 'About Lord Ayyappa',
-              content: 'Lord Ayyappa, also known as Dharma Sastha, is a Hindu deity...'
-            }
-          ]
-        };
-      }
-    });
+  private async loadContent() {
+    try {
+      const data = await this.contentService.getContent();
+      this.aboutContent = data.about;
+    } catch (error) {
+      console.error('Error loading content:', error);
+      // Fallback to hardcoded data
+      this.aboutContent = {
+        title: 'Lord Ayyappa - Dharma Sastha',
+        sections: [
+          {
+          heading: 'About Lord Ayyappa',
+          content: 'Lord Ayyappa, also known as Dharma Sastha, is a Hindu deity...'
+        }
+      ]
+      };
+    }
   }
 }

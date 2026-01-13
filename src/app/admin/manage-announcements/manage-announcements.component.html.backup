@@ -1,0 +1,129 @@
+<div class="manage-announcements">
+  <!-- Header -->
+  <div class="content-header">
+    <div>
+      <h1><mat-icon>campaign</mat-icon> Manage Announcements</h1>
+      <p class="subtitle">Create and manage temple announcements with auto-expiry</p>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="accent" (click)="addAnnouncement()" type="button">
+        <mat-icon>add</mat-icon> Add Announcement
+      </button>
+      <button mat-raised-button color="primary" class="save-btn" 
+              (click)="saveAnnouncements()" [disabled]="isSaving || announcementsForm.invalid">
+        <mat-icon>{{ isSaving ? 'hourglass_empty' : 'save' }}</mat-icon>
+        {{ isSaving ? 'Saving...' : 'Save All' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Announcements List -->
+  <div class="announcements-container" [formGroup]="announcementsForm">
+    <div formArrayName="announcements">
+      <mat-card *ngFor="let announcement of announcementsArray.controls; let i = index" 
+                [formGroupName]="i" class="announcement-card">
+        
+        <!-- Card Header -->
+        <div class="card-header">
+          <div class="header-left">
+            <h3>
+              <mat-icon>campaign</mat-icon>
+              Announcement {{ i + 1 }}
+            </h3>
+            <span class="status-badge status">
+              {{ getAnnouncementStatusLabel(announcement.value) }}
+            </span>
+          </div>
+          <div class="header-right">
+            <mat-slide-toggle formControlName="isActive" color="primary">
+              Active
+            </mat-slide-toggle>
+            <button mat-icon-button color="warn" (click)="removeAnnouncement(i)" type="button">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Form Fields -->
+        <div class="card-content">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Title</mat-label>
+            <input matInput formControlName="title" placeholder="e.g., Special Pooja Tomorrow">
+            <mat-error>Title is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Message</mat-label>
+            <textarea matInput formControlName="message" rows="3" 
+                      placeholder="Detailed announcement message"></textarea>
+            <mat-error>Message is required</mat-error>
+          </mat-form-field>
+
+          <!-- Image Upload -->
+          <div class="image-upload-section">
+            <label class="upload-label">
+              <mat-icon>image</mat-icon>
+              Announcement Image (Max 100KB)
+            </label>
+            
+            <div class="upload-container">
+              <input type="file" 
+                     #fileInput
+                     accept="image/*" 
+                     (change)="onImageSelected($event, i)"
+                     style="display: none;">
+              
+              <button mat-stroked-button type="button" (click)="fileInput.click()">
+                <mat-icon>cloud_upload</mat-icon>
+                Choose Image
+              </button>
+              
+              <div *ngIf="announcement.get('imageUrl')?.value" class="image-preview">
+                <img [src]="announcement.get('imageUrl')?.value" alt="Preview">
+                <button mat-icon-button color="warn" type="button" 
+                        (click)="removeImage(i)">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </div>
+            <mat-hint class="upload-hint">
+              Image will be automatically compressed and converted to base64 (max 100KB)
+            </mat-hint>
+          </div>
+
+          <div class="grid-2">
+            <mat-form-field appearance="outline">
+              <mat-label>Start Date</mat-label>
+              <input matInput type="date" formControlName="startDate">
+              <mat-hint>Visible from this date</mat-hint>
+              <mat-error>Start date is required</mat-error>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>End Date</mat-label>
+              <input matInput type="date" formControlName="endDate">
+              <mat-hint>Auto-removed 2 days after</mat-hint>
+              <mat-error>End date is required</mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="announcementsArray.length === 0" class="empty-state">
+      <mat-icon>campaign</mat-icon>
+      <h2>No Announcements Yet</h2>
+      <p>Click "Add Announcement" to create your first announcement</p>
+      <button mat-raised-button color="primary" (click)="addAnnouncement()">
+        <mat-icon>add</mat-icon> Create First Announcement
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading announcements...</p>
+  </div>
+</div>

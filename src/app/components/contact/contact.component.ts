@@ -13,8 +13,8 @@ export class ContactComponent {
   templeInfo = {
     name: 'UTTHARANDHRA SABARIMALA',
     teluguName: 'ఉత్తరాంధ్ర శబరిమల (అయ్యప్ప స్వామి ఆలయం)',
-    address: '531173, Aditya Nagar, Pendurthi, Visakhapatnam, Andhra Pradesh 531173',
-    phone: '094907 08933',
+    address: 'Aditya Nagar, Pendurthi, Visakhapatnam, Andhra Pradesh 531173',
+    phone: '99999 99999',
     email: 'info@ayyappaswami.org',
     website: 'ayyappasevatrust.org',
     coordinates: 'R6H8+3Q Visakhapatnam, Andhra Pradesh',
